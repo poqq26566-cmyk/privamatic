@@ -114,6 +114,11 @@ enum class PrivacyCategory(
 
     companion object {
         /**
+         * Optimized Set for O(1) lookup performance when checking system security category membership.
+         */
+        val systemSecurityChecksSet: Set<PrivacyCheck> = SYSTEM_SECURITY.checks.toSet()
+
+        /**
          * Get the category for a specific privacy check
          */
         fun getCategoryForCheck(check: PrivacyCheck): PrivacyCategory? {

@@ -27,6 +27,8 @@ class PrivacyViewModel(application: Application) : AndroidViewModel(application)
     private val _scanState = MutableStateFlow<PrivacyScanState>(PrivacyScanState.Idle)
     val scanState: StateFlow<PrivacyScanState> = _scanState.asStateFlow()
 
+    private var isInitialLoad = true
+
     init {
         // Automatically perform scan on initialization
         performScan()
@@ -36,20 +38,31 @@ class PrivacyViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch {
             _scanState.value = PrivacyScanState.Scanning
             try {
-                // Run scan and minimum display time in parallel
+                // Run scan
                 val scanDeferred = async { privacyScanner.performCompleteScan() }
-                val delayDeferred = async { delay(MINIMUM_SCAN_DISPLAY_TIME_MS) }
 
-                // Wait for both to complete (whichever takes longer)
-                awaitAll(scanDeferred, delayDeferred)
+                // Skip animation delay on initial load, show it for manual refreshes
+                if (isInitialLoad) {
+                    // Initial load: show results immediately
+                    val result = scanDeferred.await()
+                    _scanState.value = PrivacyScanState.Success(result)
+                    isInitialLoad = false
+                } else {
+                    // Manual refresh: show 800ms animation for user feedback
+                    val delayDeferred = async { delay(MINIMUM_SCAN_DISPLAY_TIME_MS) }
 
-                // Get the scan result
-                val result = scanDeferred.await()
-                _scanState.value = PrivacyScanState.Success(result)
+                    // Wait for both to complete (whichever takes longer)
+                    awaitAll(scanDeferred, delayDeferred)
+
+                    // Get the scan result
+                    val result = scanDeferred.await()
+                    _scanState.value = PrivacyScanState.Success(result)
+                }
             } catch (e: Exception) {
                 _scanState.value = PrivacyScanState.Error(
                     e.message ?: "An unknown error occurred during scanning"
                 )
+                isInitialLoad = false
             }
         }
     }

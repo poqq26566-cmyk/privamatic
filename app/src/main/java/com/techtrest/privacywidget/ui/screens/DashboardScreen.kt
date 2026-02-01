@@ -31,6 +31,8 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.techtrest.privacywidget.data.QuickWinsDetector
 import com.techtrest.privacywidget.data.model.PrivacyCategory
 import com.techtrest.privacywidget.data.model.PrivacyScore
+import com.techtrest.privacywidget.data.model.getSecurityIssuesCount
+import com.techtrest.privacywidget.data.model.getTrackingIssuesCount
 import com.techtrest.privacywidget.ui.components.DeviceInfoCard
 import com.techtrest.privacywidget.ui.components.ScoreCard
 import com.techtrest.privacywidget.ui.components.SummaryCard
@@ -75,16 +77,11 @@ fun DashboardScreen(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             // Tracking Issues (renamed from "Surveillance") - FIRST
-            val trackingIssuesCount = privacyScore.issues.count { issue ->
-                issue.check !in PrivacyCategory.SYSTEM_SECURITY.checks && !issue.isSecure
-            }
-            val trackingSubtitle = if (trackingIssuesCount == 0) {
-                "Protected"
-            } else if (trackingIssuesCount == 1) {
-                "1 Issue"
-            } else {
-                "$trackingIssuesCount Issues"
-            }
+            val trackingIssuesCount = privacyScore.getTrackingIssuesCount()
+            val trackingSubtitle = getIssueCountSubtitle(
+                count = trackingIssuesCount,
+                zeroText = "Protected"
+            )
 
             SummaryCard(
                 title = "Tracking",
@@ -98,16 +95,11 @@ fun DashboardScreen(
             )
 
             // Security Issues (System Security category only) - SECOND
-            val securityIssuesCount = privacyScore.issues.count { issue ->
-                issue.check in PrivacyCategory.SYSTEM_SECURITY.checks && !issue.isSecure
-            }
-            val securitySubtitle = if (securityIssuesCount == 0) {
-                "No Issues"
-            } else if (securityIssuesCount == 1) {
-                "1 Issue"
-            } else {
-                "$securityIssuesCount Issues"
-            }
+            val securityIssuesCount = privacyScore.getSecurityIssuesCount()
+            val securitySubtitle = getIssueCountSubtitle(
+                count = securityIssuesCount,
+                zeroText = "No Issues"
+            )
 
             SummaryCard(
                 title = "Security",
@@ -121,11 +113,12 @@ fun DashboardScreen(
             )
 
             // Quick Wins (with actual count) - THIRD
-            val quickWinsSubtitle = when (quickWins.size) {
-                0 -> "All Done!"
-                1 -> "1 Available"
-                else -> "${quickWins.size} Available"
-            }
+            val quickWinsSubtitle = getIssueCountSubtitle(
+                count = quickWins.size,
+                zeroText = "All Done!",
+                singleText = "1 Available",
+                pluralSuffix = "Available"
+            )
 
             SummaryCard(
                 title = "Quick Wins",
@@ -144,4 +137,24 @@ fun DashboardScreen(
         Spacer(modifier = Modifier.height(16.dp))
         }
     }
+}
+
+/**
+ * Generates a subtitle string based on count with customizable text.
+ *
+ * @param count The count to display
+ * @param zeroText Text to show when count is 0 (default: "No Issues")
+ * @param singleText Text to show when count is 1 (default: "1 Issue")
+ * @param pluralSuffix Suffix for plural counts (default: "Issues")
+ * @return Formatted subtitle string
+ */
+private fun getIssueCountSubtitle(
+    count: Int,
+    zeroText: String = "No Issues",
+    singleText: String = "1 Issue",
+    pluralSuffix: String = "Issues"
+): String = when (count) {
+    0 -> zeroText
+    1 -> singleText
+    else -> "$count $pluralSuffix"
 }

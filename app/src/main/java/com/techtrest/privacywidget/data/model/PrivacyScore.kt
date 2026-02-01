@@ -18,3 +18,15 @@ data class PrivacyScore(
     val scorePercentage: Float
         get() = (score.toFloat() / maxScore.toFloat()) * 100f
 }
+
+/**
+ * Returns count of tracking/surveillance issues (excludes system security category).
+ */
+fun PrivacyScore.getTrackingIssuesCount() =
+    issues.count { it.check !in PrivacyCategory.systemSecurityChecksSet && !it.isSecure }
+
+/**
+ * Returns count of security issues (system security category only).
+ */
+fun PrivacyScore.getSecurityIssuesCount() =
+    issues.count { it.check in PrivacyCategory.systemSecurityChecksSet && !it.isSecure }
