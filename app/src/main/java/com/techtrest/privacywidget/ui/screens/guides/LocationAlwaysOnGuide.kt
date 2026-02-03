@@ -1,5 +1,6 @@
 package com.techtrest.privacywidget.ui.screens.guides
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -37,6 +38,11 @@ fun LocationAlwaysOnGuide(
     onMarkDone: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // Handle back gesture to return to Manual Checks
+    BackHandler {
+        onBackClick()
+    }
+    
     Scaffold(
         topBar = {
             TopAppBar(

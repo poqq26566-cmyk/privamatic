@@ -1,5 +1,6 @@
 package com.techtrest.privacywidget.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -68,6 +69,30 @@ fun MainScreen(viewModel: PrivacyViewModel = viewModel()) {
     var showManualChecksScreen by remember { mutableStateOf(false) }
     var showGuideScreen by remember { mutableStateOf<ManualCheckType?>(null) }
     val sheetState = rememberModalBottomSheetState()
+
+    // Handle back gesture with proper navigation hierarchy
+    // Note: Guide screens handle their own back gesture via BackHandler in each guide
+    BackHandler(enabled = showManualChecksScreen) {
+        showManualChecksScreen = false
+    }
+    
+    BackHandler(enabled = showScoringSystemScreen) {
+        showScoringSystemScreen = false
+    }
+    
+    BackHandler(enabled = showAboutDialog) {
+        showAboutDialog = false
+    }
+    
+    BackHandler(enabled = showInfoDialog) {
+        showInfoDialog = false
+    }
+    
+    BackHandler(enabled = drawerState.isOpen) {
+        scope.launch {
+            drawerState.close()
+        }
+    }
 
     PrivacyNavigationDrawer(
         drawerState = drawerState,
