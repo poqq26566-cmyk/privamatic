@@ -52,6 +52,7 @@ import com.techtrest.privacywidget.data.model.QuickWinType
 import com.techtrest.privacywidget.data.model.ManualCheckState
 import com.techtrest.privacywidget.data.model.ManualCheckType
 import com.techtrest.privacywidget.ui.components.InstructionsDialog
+import com.techtrest.privacywidget.ui.components.ManualCheckCard
 import kotlinx.coroutines.launch
 
 @Composable
@@ -75,10 +76,10 @@ fun ActionsScreen(
     var selectedQuickWin by remember { mutableStateOf<QuickWin?>(null) }
 
     // Calculate estimated scroll position for Quick Wins section
-    // Hero (160dp) + spacing (16dp) + title (28dp) + spacing (16dp) + manual checks (76dp each) + spacing (16dp)
+    // Hero (~200dp) + spacing (16dp) + title (28dp) + spacing (16dp) + manual checks (~150dp each collapsed) + spacing (16dp per card)
     val quickWinsScrollTarget = remember(checkStates.size) {
         with(density) {
-            (160.dp + 16.dp + 28.dp + 16.dp + (76 * checkStates.size).dp + 16.dp).toPx().toInt()
+            (200.dp + 16.dp + 28.dp + 16.dp + (150 * checkStates.size).dp + (16 * checkStates.size).dp).toPx().toInt()
         }
     }
 
@@ -106,7 +107,7 @@ fun ActionsScreen(
             }
         )
 
-        // 2. Manual Checks Section - Compact Format
+        // 2. Manual Checks Section - Expandable Cards
         Text(
             text = "Manual Checks",
             style = MaterialTheme.typography.titleLarge,
@@ -114,9 +115,10 @@ fun ActionsScreen(
         )
 
         checkStates.forEach { checkState ->
-            CompactManualCheckItem(
+            ManualCheckCard(
                 checkState = checkState,
-                onClick = { onNavigateToGuide(checkState.type) }
+                onViewGuide = { onNavigateToGuide(checkState.type) },
+                onMarkDone = { onMarkCheckDone(checkState.type) }
             )
         }
 
@@ -223,8 +225,8 @@ fun ActionsScreen(
 }
 
 /**
- * Fixed-size hero section showing Actions Overview.
- * Displays Quick Wins count, Manual Checks status, and adaptive messaging.
+ * Card-in-card hero section showing Actions Overview.
+ * Outer card with header, inner card with status and adaptive messaging.
  * Includes scroll anchor to jump to Quick Wins section.
  */
 @Composable
@@ -249,180 +251,106 @@ private fun ActionsOverviewHero(
         else -> "All complete"
     }
 
-    // Get adaptive message and colors
-    val (message, containerColor, contentColor) = when {
-        hasOverdueChecks -> Triple(
+    // Get adaptive message and inner card colors
+    val (message, innerContainerColor) = when {
+        hasOverdueChecks -> Pair(
             "Complete overdue checks to restore your privacy score.",
-            MaterialTheme.colorScheme.errorContainer,
-            MaterialTheme.colorScheme.onErrorContainer
+            MaterialTheme.colorScheme.errorContainer
         )
-        hasDueSoon -> Triple(
+        hasDueSoon -> Pair(
             "Stay on top of reviews to maintain your +15 point bonus.",
-            MaterialTheme.colorScheme.tertiaryContainer,
-            MaterialTheme.colorScheme.onTertiaryContainer
+            MaterialTheme.colorScheme.tertiaryContainer
         )
-        hasQuickWins -> Triple(
+        hasQuickWins -> Pair(
             "Complete Quick Wins to boost your privacy score.",
-            MaterialTheme.colorScheme.primaryContainer,
-            MaterialTheme.colorScheme.onPrimaryContainer
+            MaterialTheme.colorScheme.primaryContainer
         )
-        else -> Triple(
+        else -> Pair(
             "Great privacy hygiene! Keep up the excellent work.",
-            MaterialTheme.colorScheme.secondaryContainer,
-            MaterialTheme.colorScheme.onSecondaryContainer
+            MaterialTheme.colorScheme.secondaryContainer
         )
     }
 
+    // Outer card (like Quick Wins section)
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(160.dp),
+        modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = containerColor
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.SpaceBetween
+            modifier = Modifier.padding(16.dp)
         ) {
-            // Header
+            // Header with title and scroll anchor
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(
                     imageVector = Icons.Default.Bolt,
                     contentDescription = null,
-                    tint = contentColor,
-                    modifier = Modifier.size(24.dp)
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(32.dp)
                 )
+                Spacer(modifier = Modifier.width(12.dp))
                 Text(
                     text = "Actions Overview",
                     style = MaterialTheme.typography.titleLarge,
-                    color = contentColor
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.weight(1f)
                 )
+                if (quickWinsCount > 0) {
+                    IconButton(
+                        onClick = onScrollToQuickWins,
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowDown,
+                            contentDescription = "Scroll to Quick Wins",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                }
             }
 
-            // Status Summary
-            Column(
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Inner content card (like Quick Wins items)
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.medium,
+                color = innerContainerColor
             ) {
-                // Quick Wins line with scroll anchor
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
+                    // Quick Wins count
                     Text(
                         text = "Quick Wins: $quickWinsCount available",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = contentColor
+                        color = MaterialTheme.colorScheme.onSurface
                     )
-                    if (quickWinsCount > 0) {
-                        IconButton(
-                            onClick = onScrollToQuickWins,
-                            modifier = Modifier.size(32.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.KeyboardArrowDown,
-                                contentDescription = "Scroll to Quick Wins",
-                                tint = contentColor,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                    }
-                }
 
-                // Manual Checks status
-                Text(
-                    text = "Manual Checks: $checksStatusText",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = contentColor
-                )
-            }
+                    // Manual Checks status
+                    Text(
+                        text = "Manual Checks: $checksStatusText",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
 
-            // Adaptive message
-            Text(
-                text = message,
-                style = MaterialTheme.typography.bodyMedium,
-                color = contentColor
-            )
-        }
-    }
-}
+                    Spacer(modifier = Modifier.height(4.dp))
 
-/**
- * Compact one-line manual check item.
- * Shows: Icon | Title | Progress Bar | Status
- */
-@Composable
-private fun CompactManualCheckItem(
-    checkState: ManualCheckState,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val progressColor = getProgressColor(checkState)
-    val statusText = getStatusText(checkState)
-
-    Surface(
-        onClick = onClick,
-        modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
-        color = MaterialTheme.colorScheme.surface,
-        tonalElevation = 2.dp
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            // Icon
-            Icon(
-                imageVector = checkState.type.icon,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(24.dp)
-            )
-
-            // Title
-            Text(
-                text = checkState.type.displayName,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.weight(1f)
-            )
-
-            // Progress Bar
-            Box(
-                modifier = Modifier
-                    .width(80.dp)
-                    .height(8.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
-            ) {
-                val progressValue = checkState.fillPercentage.coerceIn(0f, 1f)
-                if (progressValue > 0f) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .fillMaxWidth(progressValue)
-                            .background(progressColor)
+                    // Adaptive message
+                    Text(
+                        text = message,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
-
-            // Status
-            Text(
-                text = statusText,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.width(80.dp)
-            )
         }
     }
 }
@@ -500,33 +428,3 @@ private fun QuickWinItem(
     }
 }
 
-/**
- * Get progress bar color based on check state.
- *
- * Color scheme:
- * - 0-85% full (>7 days): Green (primary)
- * - 86-95% full (4-7 days): Amber
- * - 96-99% full (1-3 days): Orange (tertiary)
- * - 100% full (overdue): Green (full bar = action needed)
- */
-@Composable
-private fun getProgressColor(checkState: ManualCheckState): Color {
-    return when {
-        checkState.fillPercentage >= 1f -> MaterialTheme.colorScheme.primary
-        checkState.fillPercentage >= 0.96f -> MaterialTheme.colorScheme.tertiary
-        checkState.fillPercentage >= 0.86f -> Color(0xFFFFA726) // Amber
-        else -> MaterialTheme.colorScheme.primary
-    }
-}
-
-/**
- * Get status text based on days remaining.
- */
-private fun getStatusText(checkState: ManualCheckState): String {
-    return when {
-        checkState.isOverdue -> "Due now"
-        checkState.daysRemaining == 1 -> "1 day"
-        checkState.daysRemaining <= 90 -> "${checkState.daysRemaining} days"
-        else -> "${checkState.daysRemaining} days"
-    }
-}
