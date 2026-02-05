@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -44,7 +45,6 @@ import com.techtrest.privacywidget.data.model.QuickWin
 import com.techtrest.privacywidget.data.model.QuickWinType
 import com.techtrest.privacywidget.data.model.ManualCheckState
 import com.techtrest.privacywidget.data.model.ManualCheckType
-import com.techtrest.privacywidget.ui.components.ManualCheckCard
 
 @Composable
 fun ActionsScreen(
@@ -104,10 +104,9 @@ fun ActionsScreen(
         )
 
         checkStates.forEach { checkState ->
-            ManualCheckCard(
+            ManualCheckGarminRow(
                 checkState = checkState,
-                onViewGuide = { onNavigateToGuide(checkState.type) },
-                onMarkDone = { onMarkCheckDone(checkState.type) }
+                onClick = { onNavigateToGuide(checkState.type) }
             )
         }
     }
@@ -284,6 +283,95 @@ private fun QuickWinAllDoneTile(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
+    }
+}
+
+/**
+ * Garmin-style full-width row for Manual Checks.
+ * Icon vertically centered on left, title/progress/status on right.
+ * No card elevation, subtle press state.
+ */
+@Composable
+private fun ManualCheckGarminRow(
+    checkState: ManualCheckState,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val progressColor = getProgressColor(checkState)
+    val statusText = getStatusText(checkState)
+
+    Surface(
+        onClick = onClick,
+        modifier = modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.surface
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // Icon - vertically centered on left
+            Icon(
+                imageVector = checkState.type.icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(32.dp)
+            )
+
+            // Content - title, progress, status
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                // Title
+                Text(
+                    text = checkState.type.displayName,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                // Progress bar
+                LinearProgressIndicator(
+                    progress = { checkState.fillPercentage.coerceIn(0f, 1f) },
+                    modifier = Modifier.fillMaxWidth(),
+                    color = progressColor,
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+
+                // Status text
+                Text(
+                    text = statusText,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
+}
+
+/**
+ * Get progress bar color based on check state.
+ */
+@Composable
+private fun getProgressColor(checkState: ManualCheckState): Color {
+    return when {
+        checkState.fillPercentage >= 1f -> MaterialTheme.colorScheme.primary
+        checkState.fillPercentage >= 0.96f -> MaterialTheme.colorScheme.tertiary
+        checkState.fillPercentage >= 0.86f -> Color(0xFFFFA726) // Amber
+        else -> MaterialTheme.colorScheme.primary
+    }
+}
+
+/**
+ * Get status text based on days remaining.
+ */
+private fun getStatusText(checkState: ManualCheckState): String {
+    return when {
+        checkState.isOverdue -> "Review needed"
+        checkState.daysRemaining == 1 -> "1 day remaining"
+        else -> "${checkState.daysRemaining} days remaining"
     }
 }
 
