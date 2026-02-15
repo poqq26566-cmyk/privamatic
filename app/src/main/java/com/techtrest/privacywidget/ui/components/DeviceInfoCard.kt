@@ -16,12 +16,23 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.techtrest.privacywidget.data.model.ScoreHistory
+import kotlin.math.abs
 
 @Composable
-fun DeviceInfoCard(modifier: Modifier = Modifier) {
+fun DeviceInfoCard(
+    scoreHistory: ScoreHistory?,
+    modifier: Modifier = Modifier
+) {
     val context = LocalContext.current
+    val scoreDelta = scoreHistory?.scoreDelta
+    val showPrivacyChange = scoreDelta != null &&
+            scoreDelta != 0 &&
+            scoreHistory != null &&
+            (System.currentTimeMillis() - scoreHistory.lastUpdateTimestamp) <= CHANGE_EXPIRY_MS
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -42,9 +53,26 @@ fun DeviceInfoCard(modifier: Modifier = Modifier) {
             DeviceInfoRow("Model", Build.MODEL)
             DeviceInfoRow("Operating System", detectOperatingSystem(context))
             DeviceInfoRow("Android Version", Build.VERSION.RELEASE)
+
+            if (showPrivacyChange && scoreDelta != null) {
+                val isIncrease = scoreDelta > 0
+                val changeText = "${if (isIncrease) "↑" else "↓"}${abs(scoreDelta)} pts"
+                val changeColor = if (isIncrease) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.error
+                }
+                DeviceInfoRow(
+                    label = "Privacy Change",
+                    value = changeText,
+                    valueColor = changeColor
+                )
+            }
         }
     }
 }
+
+private const val CHANGE_EXPIRY_MS = 172_800_000L  // 48 hours
 
 /**
  * Detects the operating system/ROM running on the device
@@ -158,7 +186,11 @@ private fun isGrapheneOS(context: Context): Boolean {
 }
 
 @Composable
-private fun DeviceInfoRow(label: String, value: String) {
+private fun DeviceInfoRow(
+    label: String,
+    value: String,
+    valueColor: Color = MaterialTheme.colorScheme.onSurfaceVariant
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
@@ -170,7 +202,7 @@ private fun DeviceInfoRow(label: String, value: String) {
         Text(
             text = value,
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = valueColor
         )
     }
 }

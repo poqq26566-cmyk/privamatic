@@ -27,26 +27,21 @@ import com.techtrest.privacywidget.data.model.PrivacyScore
 import com.techtrest.privacywidget.data.scanner.PrivacyScoreCalculator
 
 @Composable
-fun ScoreCard(privacyScore: PrivacyScore, modifier: Modifier = Modifier) {
+fun ScoreCard(
+    privacyScore: PrivacyScore,
+    modifier: Modifier = Modifier
+) {
     val scoreColor = getScoreColor(privacyScore.score)
 
-    // Animate the progress indicator
     val animatedProgress by animateFloatAsState(
         targetValue = privacyScore.scorePercentage / 100f,
-        animationSpec = tween(
-            durationMillis = 800,
-            easing = FastOutSlowInEasing
-        ),
+        animationSpec = tween(durationMillis = 800, easing = FastOutSlowInEasing),
         label = "score_progress"
     )
 
-    // Animate the score number
     val animatedScore by animateIntAsState(
         targetValue = privacyScore.score,
-        animationSpec = tween(
-            durationMillis = 800,
-            easing = FastOutSlowInEasing
-        ),
+        animationSpec = tween(durationMillis = 800, easing = FastOutSlowInEasing),
         label = "score_value"
     )
 
@@ -72,7 +67,6 @@ fun ScoreCard(privacyScore: PrivacyScore, modifier: Modifier = Modifier) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Circular progress indicator with score overlaid
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.size(140.dp)
@@ -85,7 +79,6 @@ fun ScoreCard(privacyScore: PrivacyScore, modifier: Modifier = Modifier) {
                     trackColor = MaterialTheme.colorScheme.surfaceVariant
                 )
 
-                // Score text overlaid on indicator (animated)
                 Text(
                     text = "$animatedScore",
                     style = MaterialTheme.typography.displayLarge,
