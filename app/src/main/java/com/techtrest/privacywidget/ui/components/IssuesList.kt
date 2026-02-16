@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -15,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.techtrest.privacywidget.data.model.PrivacyScore
 
 @Composable
@@ -24,14 +22,15 @@ fun IssuesList(privacyScore: PrivacyScore, modifier: Modifier = Modifier) {
         modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
-        )
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
                 text = "Privacy Checks",
-                fontSize = 18.sp,
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
             )
 
@@ -39,7 +38,7 @@ fun IssuesList(privacyScore: PrivacyScore, modifier: Modifier = Modifier) {
 
             Text(
                 text = "${privacyScore.insecureIssues.size} issue${if (privacyScore.insecureIssues.size != 1) "s" else ""} found",
-                fontSize = 14.sp,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
@@ -49,7 +48,7 @@ fun IssuesList(privacyScore: PrivacyScore, modifier: Modifier = Modifier) {
             if (privacyScore.insecureIssues.isNotEmpty()) {
                 Text(
                     text = "Issues Detected (${privacyScore.insecureIssues.size})",
-                    fontSize = 14.sp,
+                    style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.error,
                     modifier = Modifier.padding(bottom = 8.dp)
@@ -71,7 +70,7 @@ fun IssuesList(privacyScore: PrivacyScore, modifier: Modifier = Modifier) {
             if (privacyScore.secureIssues.isNotEmpty()) {
                 Text(
                     text = "Secure Settings (${privacyScore.secureIssues.size})",
-                    fontSize = 14.sp,
+                    style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(bottom = 8.dp)

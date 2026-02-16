@@ -3,9 +3,9 @@ package com.techtrest.privacywidget.ui.components
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
 
 @Composable
 fun AboutDialog(
@@ -16,7 +16,7 @@ fun AboutDialog(
         title = {
             Text(
                 text = "About Privacy Guard",
-                fontSize = 20.sp,
+                style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
         },
@@ -31,8 +31,7 @@ fun AboutDialog(
 
                     Open source and available on F-Droid.
                 """.trimIndent(),
-                fontSize = 14.sp,
-                lineHeight = 20.sp
+                style = MaterialTheme.typography.bodyMedium
             )
         },
         confirmButton = {

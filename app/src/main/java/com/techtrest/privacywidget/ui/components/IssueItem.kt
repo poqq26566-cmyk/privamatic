@@ -81,7 +81,7 @@ fun IssueItem(issue: PrivacyIssue, modifier: Modifier = Modifier) {
                         text = "-${issue.pointDeduction}",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onError,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                     )
                 }
             }

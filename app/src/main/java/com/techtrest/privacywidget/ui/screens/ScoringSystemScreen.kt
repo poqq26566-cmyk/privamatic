@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -141,19 +142,21 @@ private fun SecurityChecksSection() {
             modifier = Modifier.padding(16.dp)
         ) {
             // Security checks
-            val securityChecks = listOf(
-                PrivacyCheck.SCREEN_LOCK,
-                PrivacyCheck.DEVICE_ENCRYPTION,
-                PrivacyCheck.NOTIFICATION_LISTENER,
-                PrivacyCheck.ACCESSIBILITY_SERVICE,
-                PrivacyCheck.USB_DEBUGGING,
-                PrivacyCheck.DEVICE_ADMIN,
-                PrivacyCheck.DEVELOPER_OPTIONS,
-                PrivacyCheck.BIOMETRIC_AUTH
-            )
+            val securityChecks = remember {
+                listOf(
+                    PrivacyCheck.SCREEN_LOCK,
+                    PrivacyCheck.DEVICE_ENCRYPTION,
+                    PrivacyCheck.NOTIFICATION_LISTENER,
+                    PrivacyCheck.ACCESSIBILITY_SERVICE,
+                    PrivacyCheck.USB_DEBUGGING,
+                    PrivacyCheck.DEVICE_ADMIN,
+                    PrivacyCheck.DEVELOPER_OPTIONS,
+                    PrivacyCheck.BIOMETRIC_AUTH
+                )
+            }
 
-            val securityMaxPoints = securityChecks.sumOf { it.pointDeduction }
-            val sortedSecurityChecks = securityChecks.sortedByDescending { it.pointDeduction }
+            val securityMaxPoints = remember { securityChecks.sumOf { it.pointDeduction } }
+            val sortedSecurityChecks = remember { securityChecks.sortedByDescending { it.pointDeduction } }
 
             // Section Header
             Row(
@@ -202,41 +205,43 @@ private fun SurveillanceChecksSection() {
             modifier = Modifier.padding(16.dp)
         ) {
             // Surveillance checks
-            val surveillanceChecks = listOf(
-                PrivacyCheck.PRIVATE_DNS,
-                PrivacyCheck.ADVERTISING_ID,
-                PrivacyCheck.VPN_CONNECTION,
-                PrivacyCheck.DEFAULT_BROWSER,
-                PrivacyCheck.DEFAULT_KEYBOARD,
-                PrivacyCheck.WIFI_SCANNING,
-                PrivacyCheck.FIND_MY_DEVICE,
-                PrivacyCheck.DEFAULT_SMS,
-                PrivacyCheck.DEFAULT_EMAIL,
-                PrivacyCheck.DEFAULT_LAUNCHER,
-                PrivacyCheck.ALWAYS_ON_VPN,
-                PrivacyCheck.GOOGLE_CHROME,
-                PrivacyCheck.GMAIL_APP,
-                PrivacyCheck.GOOGLE_MAPS,
-                PrivacyCheck.GOOGLE_PHOTOS,
-                PrivacyCheck.GOOGLE_DRIVE,
-                PrivacyCheck.FACEBOOK_APP,
-                PrivacyCheck.INSTAGRAM_APP,
-                PrivacyCheck.WHATSAPP_APP,
-                PrivacyCheck.MESSENGER_APP,
-                PrivacyCheck.EDGE_APP,
-                PrivacyCheck.OUTLOOK_APP,
-                PrivacyCheck.CHATGPT_APP,
-                PrivacyCheck.GOOGLE_GEMINI,
-                PrivacyCheck.MICROSOFT_COPILOT,
-                PrivacyCheck.CLAUDE_APP,
-                PrivacyCheck.META_AI,
-                PrivacyCheck.TIKTOK_APP,
-                PrivacyCheck.TWITTER_APP,
-                PrivacyCheck.AMAZON_SHOPPING
-            )
+            val surveillanceChecks = remember {
+                listOf(
+                    PrivacyCheck.PRIVATE_DNS,
+                    PrivacyCheck.ADVERTISING_ID,
+                    PrivacyCheck.VPN_CONNECTION,
+                    PrivacyCheck.DEFAULT_BROWSER,
+                    PrivacyCheck.DEFAULT_KEYBOARD,
+                    PrivacyCheck.WIFI_SCANNING,
+                    PrivacyCheck.FIND_MY_DEVICE,
+                    PrivacyCheck.DEFAULT_SMS,
+                    PrivacyCheck.DEFAULT_EMAIL,
+                    PrivacyCheck.DEFAULT_LAUNCHER,
+                    PrivacyCheck.ALWAYS_ON_VPN,
+                    PrivacyCheck.GOOGLE_CHROME,
+                    PrivacyCheck.GMAIL_APP,
+                    PrivacyCheck.GOOGLE_MAPS,
+                    PrivacyCheck.GOOGLE_PHOTOS,
+                    PrivacyCheck.GOOGLE_DRIVE,
+                    PrivacyCheck.FACEBOOK_APP,
+                    PrivacyCheck.INSTAGRAM_APP,
+                    PrivacyCheck.WHATSAPP_APP,
+                    PrivacyCheck.MESSENGER_APP,
+                    PrivacyCheck.EDGE_APP,
+                    PrivacyCheck.OUTLOOK_APP,
+                    PrivacyCheck.CHATGPT_APP,
+                    PrivacyCheck.GOOGLE_GEMINI,
+                    PrivacyCheck.MICROSOFT_COPILOT,
+                    PrivacyCheck.CLAUDE_APP,
+                    PrivacyCheck.META_AI,
+                    PrivacyCheck.TIKTOK_APP,
+                    PrivacyCheck.TWITTER_APP,
+                    PrivacyCheck.AMAZON_SHOPPING
+                )
+            }
 
-            val surveillanceMaxPoints = surveillanceChecks.sumOf { it.pointDeduction }
-            val sortedSurveillanceChecks = surveillanceChecks.sortedByDescending { it.pointDeduction }
+            val surveillanceMaxPoints = remember { surveillanceChecks.sumOf { it.pointDeduction } }
+            val sortedSurveillanceChecks = remember { surveillanceChecks.sortedByDescending { it.pointDeduction } }
 
             // Section Header
             Row(

@@ -57,7 +57,7 @@ fun DashboardScreen(
 
     // Manual checks state
     val checkStates by maintenanceManager.getCheckStates().collectAsState(initial = emptyList())
-    val overdueCount = checkStates.count { it.isOverdue }
+    val overdueCount = remember(checkStates) { checkStates.count { it.isOverdue } }
 
     // Quick Wins state (only actionable privacy settings, no manual checks)
     val quickWins = remember(privacyScore) {

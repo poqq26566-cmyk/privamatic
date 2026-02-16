@@ -43,7 +43,7 @@ fun PrivacyWins(
     modifier: Modifier = Modifier,
     initialExpanded: Boolean = false
 ) {
-    val wins = collectPrivacyWins(privacyScore)
+    val wins = remember(privacyScore) { collectPrivacyWins(privacyScore) }
     var isExpanded by remember { mutableStateOf(initialExpanded) }
 
     if (wins.isEmpty()) {

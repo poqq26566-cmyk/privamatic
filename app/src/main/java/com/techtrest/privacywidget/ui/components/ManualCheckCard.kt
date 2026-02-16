@@ -37,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.techtrest.privacywidget.Amber
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -126,7 +127,7 @@ fun ManualCheckCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(8.dp)
-                    .clip(RoundedCornerShape(4.dp))
+                    .clip(RoundedCornerShape(8.dp))
                     .background(MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 if (progressValue > 0f) {
@@ -207,7 +208,7 @@ private fun getProgressColor(checkState: ManualCheckState): Color {
     return when {
         checkState.fillPercentage >= 1f -> MaterialTheme.colorScheme.primary
         checkState.fillPercentage >= 0.96f -> MaterialTheme.colorScheme.tertiary
-        checkState.fillPercentage >= 0.86f -> Color(0xFFFFA726) // Amber
+        checkState.fillPercentage >= 0.86f -> Amber
         else -> MaterialTheme.colorScheme.primary
     }
 }

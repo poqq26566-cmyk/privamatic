@@ -35,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import com.techtrest.privacywidget.Amber
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.techtrest.privacywidget.data.model.ManualCheckState
@@ -120,7 +121,7 @@ fun ManualCheckDetailScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(8.dp)
-                            .clip(RoundedCornerShape(4.dp))
+                            .clip(RoundedCornerShape(8.dp))
                             .background(MaterialTheme.colorScheme.surface)
                     ) {
                         if (progressValue > 0f) {
@@ -222,7 +223,7 @@ private fun getProgressColor(checkState: ManualCheckState): Color {
     return when {
         checkState.fillPercentage >= 1f -> MaterialTheme.colorScheme.primary
         checkState.fillPercentage >= 0.96f -> MaterialTheme.colorScheme.tertiary
-        checkState.fillPercentage >= 0.86f -> Color(0xFFFFA726) // Amber
+        checkState.fillPercentage >= 0.86f -> Amber
         else -> MaterialTheme.colorScheme.primary
     }
 }
