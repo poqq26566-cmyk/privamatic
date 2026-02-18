@@ -1,4 +1,4 @@
-# Privamatic
+# **PRIVA**matic
 
 > **Device Privacy Auditor for Android**
 
@@ -7,7 +7,7 @@
 [![Compose](https://img.shields.io/badge/Jetpack%20Compose-1.7-4285F4?logo=jetpackcompose)](https://developer.android.com/jetpack/compose)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-Privamatic audits your Android device's privacy and security settings, giving you a clear 0–100 score with actionable steps to improve it. Built for GrapheneOS users and anyone who wants to understand what's exposing their data.
+**PRIVA**matic audits your Android device's privacy and security settings, giving you a clear 0–100 score with actionable steps to improve it. Built for GrapheneOS users and anyone who wants to understand what's exposing their data.
 
 **Status:** In active development · Not yet published · Contributions welcome
 
@@ -90,7 +90,7 @@ app/src/main/java/com/techtrest/privacywidget/
 - Submit to F-Droid
 - Privacy tips system (contextual, educational)
 - Score history trending
-- App renamed to Privamatic
+- App renamed to **PRIVA**matic
 
 **Future**
 - Export audit reports
