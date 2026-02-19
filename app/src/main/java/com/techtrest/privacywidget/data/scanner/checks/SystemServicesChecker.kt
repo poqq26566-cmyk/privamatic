@@ -2,7 +2,6 @@ package com.techtrest.privacywidget.data.scanner.checks
 
 import android.accessibilityservice.AccessibilityServiceInfo
 import android.app.admin.DevicePolicyManager
-import android.content.ComponentName
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -22,19 +21,10 @@ class SystemServicesChecker(private val context: Context) {
     fun checkDeviceEncryption(): PrivacyIssue {
         return try {
             val devicePolicyManager = context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
-            val isEncrypted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                // On Android 6.0+, check encryption status
-                val encryptionStatus = devicePolicyManager.storageEncryptionStatus
-                encryptionStatus == DevicePolicyManager.ENCRYPTION_STATUS_ACTIVE ||
-                encryptionStatus == DevicePolicyManager.ENCRYPTION_STATUS_ACTIVE_DEFAULT_KEY ||
-                encryptionStatus == DevicePolicyManager.ENCRYPTION_STATUS_ACTIVE_PER_USER
-            } else {
-                // On older versions, assume encrypted if device is secure
-                @Suppress("DEPRECATION")
-                val encryptionStatus = devicePolicyManager.storageEncryptionStatus
-                encryptionStatus != DevicePolicyManager.ENCRYPTION_STATUS_UNSUPPORTED &&
-                encryptionStatus != DevicePolicyManager.ENCRYPTION_STATUS_INACTIVE
-            }
+            val encryptionStatus = devicePolicyManager.storageEncryptionStatus
+            val isEncrypted = encryptionStatus == DevicePolicyManager.ENCRYPTION_STATUS_ACTIVE ||
+                    encryptionStatus == DevicePolicyManager.ENCRYPTION_STATUS_ACTIVE_DEFAULT_KEY ||
+                    encryptionStatus == DevicePolicyManager.ENCRYPTION_STATUS_ACTIVE_PER_USER
 
             PrivacyIssue(
                 check = PrivacyCheck.DEVICE_ENCRYPTION,
@@ -194,7 +184,7 @@ class SystemServicesChecker(private val context: Context) {
             val devicePolicyManager = context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
             val activeAdmins = devicePolicyManager.activeAdmins
 
-            if (activeAdmins == null || activeAdmins.isEmpty()) {
+            if (activeAdmins.isNullOrEmpty()) {
                 return PrivacyIssue(
                     check = PrivacyCheck.DEVICE_ADMIN,
                     isSecure = true,
@@ -223,7 +213,7 @@ class SystemServicesChecker(private val context: Context) {
                     check = PrivacyCheck.DEVICE_ADMIN,
                     isSecure = false,
                     currentStatus = "${nonSystemAdmins.size} non-system app(s) have device admin: ${appNames.joinToString(", ")}",
-                    technicalDetails = "Packages: ${nonSystemAdmins.map { it.packageName }.joinToString(", ")}",
+                    technicalDetails = "Packages: ${nonSystemAdmins.joinToString { it.packageName }}",
                     customPointDeduction = pointDeduction
                 )
             }
@@ -245,7 +235,7 @@ class SystemServicesChecker(private val context: Context) {
         return try {
             val appInfo = packageManager.getApplicationInfo(packageName, 0)
             (appInfo.flags and android.content.pm.ApplicationInfo.FLAG_SYSTEM) != 0
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             true // If we can't determine, assume system app to avoid false positives
         }
     }
@@ -257,7 +247,7 @@ class SystemServicesChecker(private val context: Context) {
         return try {
             val appInfo = packageManager.getApplicationInfo(packageName, 0)
             packageManager.getApplicationLabel(appInfo).toString()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             packageName
         }
     }

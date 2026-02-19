@@ -27,7 +27,8 @@ enum class PrivacyCategory(
             PrivacyCheck.DEVELOPER_OPTIONS,
             PrivacyCheck.NOTIFICATION_LISTENER,
             PrivacyCheck.ACCESSIBILITY_SERVICE,
-            PrivacyCheck.DEVICE_ADMIN
+            PrivacyCheck.DEVICE_ADMIN,
+            PrivacyCheck.BACKGROUND_LOCATION_APPS
         )
     ),
     NETWORK_PRIVACY(
@@ -35,7 +36,6 @@ enum class PrivacyCategory(
         icon = Icons.Filled.Language,
         checks = listOf(
             PrivacyCheck.VPN_CONNECTION,
-            PrivacyCheck.ALWAYS_ON_VPN,
             PrivacyCheck.PRIVATE_DNS,
             PrivacyCheck.ADVERTISING_ID,
             PrivacyCheck.WIFI_SCANNING
@@ -45,7 +45,8 @@ enum class PrivacyCategory(
         displayName = "Google Services",
         icon = Icons.Filled.Cloud,
         checks = listOf(
-            PrivacyCheck.FIND_MY_DEVICE
+            PrivacyCheck.FIND_MY_DEVICE,
+            PrivacyCheck.GOOGLE_PLAY_SERVICES
         )
     ),
     DEFAULT_APPS(

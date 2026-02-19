@@ -29,72 +29,15 @@ class NetworkSecurityChecker(private val context: Context) {
                 check = PrivacyCheck.VPN_CONNECTION,
                 isSecure = hasVpn,
                 currentStatus = if (hasVpn) "Active" else "Not active",
-                technicalDetails = "Checked using NetworkCapabilities.TRANSPORT_VPN"
+                technicalDetails = if (hasVpn)
+                    "Checked using NetworkCapabilities.TRANSPORT_VPN"
+                else
+                    "Checked using NetworkCapabilities.TRANSPORT_VPN\nTip: consider enabling Always-On VPN in Settings → Network → VPN"
             )
         } catch (e: Exception) {
             PrivacyIssue(
                 check = PrivacyCheck.VPN_CONNECTION,
                 isSecure = false,
-                currentStatus = "Unable to determine",
-                technicalDetails = "Error: ${e.message}"
-            )
-        }
-    }
-
-    /**
-     * Check if Always-On VPN is enabled (only relevant if VPN is active)
-     */
-    fun checkAlwaysOnVpn(): PrivacyIssue {
-        return try {
-            // First check if VPN is active
-            val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            val hasVpn = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                val network = connectivityManager.activeNetwork
-                val capabilities = connectivityManager.getNetworkCapabilities(network)
-                capabilities?.hasTransport(NetworkCapabilities.TRANSPORT_VPN) == true
-            } else {
-                false
-            }
-
-            if (!hasVpn) {
-                // No VPN active, so this check doesn't apply
-                return PrivacyIssue(
-                    check = PrivacyCheck.ALWAYS_ON_VPN,
-                    isSecure = true,
-                    currentStatus = "Not applicable (no VPN active)",
-                    technicalDetails = "Always-On VPN only matters when VPN is in use"
-                )
-            }
-
-            // Check if always-on VPN is enabled (Android 7.0+)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                val alwaysOnVpnPackage = Settings.Secure.getString(
-                    context.contentResolver,
-                    "always_on_vpn_app"
-                )
-
-                val isAlwaysOn = !alwaysOnVpnPackage.isNullOrEmpty()
-
-                PrivacyIssue(
-                    check = PrivacyCheck.ALWAYS_ON_VPN,
-                    isSecure = isAlwaysOn,
-                    currentStatus = if (isAlwaysOn) "Enabled" else "Disabled",
-                    technicalDetails = if (isAlwaysOn) "VPN package: $alwaysOnVpnPackage" else "Always-On VPN is not configured"
-                )
-            } else {
-                // Always-On VPN not available on older devices
-                PrivacyIssue(
-                    check = PrivacyCheck.ALWAYS_ON_VPN,
-                    isSecure = true, // Don't penalize older devices
-                    currentStatus = "Not available on Android < 7.0",
-                    technicalDetails = "Always-On VPN requires Android 7.0+"
-                )
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error checking Always-On VPN", e)
-            PrivacyIssue(
-                check = PrivacyCheck.ALWAYS_ON_VPN,
-                isSecure = true, // Don't penalize on error
                 currentStatus = "Unable to determine",
                 technicalDetails = "Error: ${e.message}"
             )
@@ -109,20 +52,47 @@ class NetworkSecurityChecker(private val context: Context) {
                     "private_dns_mode"
                 )
 
-                val isConfigured = privateDnsMode != null && privateDnsMode != "off"
-                val modeDescription = when (privateDnsMode) {
-                    "hostname" -> "Configured with custom hostname"
-                    "opportunistic" -> "Automatic mode"
-                    "off" -> "Disabled"
-                    else -> "Unknown mode"
+                when (privateDnsMode) {
+                    "hostname" -> {
+                        val hostname = Settings.Global.getString(
+                            context.contentResolver,
+                            "private_dns_specifier"
+                        )
+                        if (!hostname.isNullOrEmpty()) {
+                            PrivacyIssue(
+                                check = PrivacyCheck.PRIVATE_DNS,
+                                isSecure = true,
+                                currentStatus = "Custom hostname configured",
+                                technicalDetails = "Hostname: $hostname"
+                            )
+                        } else {
+                            PrivacyIssue(
+                                check = PrivacyCheck.PRIVATE_DNS,
+                                isSecure = false,
+                                currentStatus = "Hostname mode set but no hostname configured",
+                                technicalDetails = "Hostname mode is active but no hostname is provided"
+                            )
+                        }
+                    }
+                    "opportunistic" -> PrivacyIssue(
+                        check = PrivacyCheck.PRIVATE_DNS,
+                        isSecure = true,
+                        currentStatus = "Automatic mode (opportunistic)",
+                        technicalDetails = "Automatic mode"
+                    )
+                    "off" -> PrivacyIssue(
+                        check = PrivacyCheck.PRIVATE_DNS,
+                        isSecure = false,
+                        currentStatus = "Not configured",
+                        technicalDetails = "Disabled"
+                    )
+                    else -> PrivacyIssue(
+                        check = PrivacyCheck.PRIVATE_DNS,
+                        isSecure = false,
+                        currentStatus = "Not configured",
+                        technicalDetails = if (privateDnsMode == null) "Not configured" else "Unknown mode: $privateDnsMode"
+                    )
                 }
-
-                PrivacyIssue(
-                    check = PrivacyCheck.PRIVATE_DNS,
-                    isSecure = isConfigured,
-                    currentStatus = if (isConfigured) "Configured" else "Not configured",
-                    technicalDetails = modeDescription
-                )
             } else {
                 // Private DNS not available before Android 9
                 PrivacyIssue(

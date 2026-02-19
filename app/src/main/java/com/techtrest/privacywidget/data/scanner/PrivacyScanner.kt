@@ -40,16 +40,17 @@ class PrivacyScanner(private val context: Context) {
         issues.add(systemServicesChecker.checkNotificationListeners())
         issues.add(systemServicesChecker.checkAccessibilityServices())
         issues.add(systemServicesChecker.checkDeviceAdminApps())
+        issues.add(installedAppsChecker.checkBackgroundLocationApps())
 
         // ===== NETWORK & TRACKING PRIVACY CHECKS =====
         issues.add(networkChecker.checkVpnConnection())
-        issues.add(networkChecker.checkAlwaysOnVpn())
         issues.add(networkChecker.checkPrivateDns())
         issues.add(networkChecker.checkAdvertisingId())
         issues.add(playChecker.checkWifiScanning())
 
         // ===== GOOGLE SERVICES CHECKS =====
         issues.add(googleServicesChecker.checkFindMyDevice())
+        issues.add(googleServicesChecker.checkGooglePlayServices())
 
         // ===== DEFAULT APPS CHECKS =====
         issues.add(defaultAppsChecker.checkDefaultBrowser())

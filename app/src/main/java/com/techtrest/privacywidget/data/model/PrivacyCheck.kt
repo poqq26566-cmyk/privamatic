@@ -64,6 +64,14 @@ enum class PrivacyCheck(
         actionType = ActionType.DEVICE_ADMIN_SETTINGS,
         actionLabel = "Manage Admins"
     ),
+    BACKGROUND_LOCATION_APPS(
+        displayName = "Background Location Access",
+        pointDeduction = 4,
+        description = "Apps with background location permission can track your precise location at all times, even when not in use",
+        recommendation = "Review and restrict background location permissions in Settings > Location > App permissions. Only grant background location to apps that genuinely need it.",
+        actionType = ActionType.LOCATION_SETTINGS,
+        actionLabel = "Manage Permissions"
+    ),
 
     // ===== NETWORK & TRACKING PRIVACY =====
     VPN_CONNECTION(
@@ -71,12 +79,6 @@ enum class PrivacyCheck(
         pointDeduction = 5,
         description = "VPN should be active to protect network traffic",
         recommendation = "Enable a VPN connection to encrypt your internet traffic and protect your privacy online."
-    ),
-    ALWAYS_ON_VPN(
-        displayName = "Always-On VPN",
-        pointDeduction = 2,
-        description = "When using VPN, Always-On VPN prevents accidental unencrypted connections",
-        recommendation = "Enable Always-On VPN in Settings > Network & internet > VPN > [Your VPN] > Always-on VPN."
     ),
     PRIVATE_DNS(
         displayName = "Private DNS",
@@ -103,6 +105,15 @@ enum class PrivacyCheck(
         pointDeduction = 2,
         description = "Google's Find My Device tracks device location (security feature but privacy cost)",
         recommendation = "Disable Find My Device in Settings > Security > Find My Device if privacy is priority over theft protection."
+    ),
+    GOOGLE_PLAY_SERVICES(
+        displayName = "Google Play Services",
+        pointDeduction = 8,
+        description = "Google Play Services with full system privileges enables extensive telemetry and data collection across all apps",
+        recommendation = "Consider using GrapheneOS to run Google Play Services in sandboxed mode, significantly reducing its access to your device.",
+        actionType = ActionType.OPEN_APP_SETTINGS,
+        actionLabel = "Open App Settings",
+        packageName = "com.google.android.gms"
     ),
 
     // ===== DEFAULT APPS =====

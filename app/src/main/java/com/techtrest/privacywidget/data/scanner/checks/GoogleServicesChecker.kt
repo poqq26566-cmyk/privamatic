@@ -1,52 +1,60 @@
 package com.techtrest.privacywidget.data.scanner.checks
 
 import android.content.Context
-import android.os.Build
-import android.provider.Settings
+import android.content.pm.PackageManager
 import android.util.Log
 import com.techtrest.privacywidget.data.model.PrivacyCheck
 import com.techtrest.privacywidget.data.model.PrivacyIssue
 
 class GoogleServicesChecker(private val context: Context) {
 
+    private val packageManager: PackageManager = context.packageManager
+
     /**
-     * Check if Google's Find My Device is enabled
+     * Check Google Play Services installation state.
+     * Stage 1: Not installed → isSecure = true
+     * Stage 2: Sandboxed (no FLAG_SYSTEM) → isSecure = true (acceptable privacy trade-off)
+     * Stage 3: Full system privileges → isSecure = false
      */
-    fun checkFindMyDevice(): PrivacyIssue {
+    fun checkGooglePlayServices(): PrivacyIssue {
         return try {
-            // Check through multiple methods as implementation varies by device/Android version
-            val findMyDeviceEnabled = when {
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.P -> {
-                    // Try to check through system settings
-                    try {
-                        val value = Settings.Secure.getInt(
-                            context.contentResolver,
-                            "find_my_device_enabled",
-                            -1
-                        )
-                        value == 1
-                    } catch (e: Exception) {
-                        // Setting might not exist, try alternative
-                        checkFindMyDeviceAlternative()
-                    }
-                }
-                else -> {
-                    // Older versions
-                    checkFindMyDeviceAlternative()
-                }
+            val appInfo = try {
+                packageManager.getApplicationInfo(GMS_PACKAGE, 0)
+            } catch (e: PackageManager.NameNotFoundException) {
+                null
             }
 
-            PrivacyIssue(
-                check = PrivacyCheck.FIND_MY_DEVICE,
-                isSecure = !findMyDeviceEnabled,
-                currentStatus = if (findMyDeviceEnabled) "Enabled" else "Disabled",
-                technicalDetails = "Checked via system settings (SDK ${Build.VERSION.SDK_INT})"
-            )
+            val hasSystemFlag = appInfo != null &&
+                (appInfo.flags and android.content.pm.ApplicationInfo.FLAG_SYSTEM) != 0
+            val isInDataPartition = appInfo?.sourceDir?.startsWith("/data/") == true
+            val isFullSystem = hasSystemFlag && !isInDataPartition
+
+            when {
+                appInfo == null -> PrivacyIssue(
+                    check = PrivacyCheck.GOOGLE_PLAY_SERVICES,
+                    isSecure = true,
+                    currentStatus = "Not installed",
+                    technicalDetails = "$GMS_PACKAGE is not installed"
+                )
+                !isFullSystem -> PrivacyIssue(
+                    check = PrivacyCheck.GOOGLE_PLAY_SERVICES,
+                    isSecure = true,
+                    currentStatus = "Installed (sandboxed)",
+                    technicalDetails = "Running without system privileges - reduced privacy risk"
+                )
+                else -> PrivacyIssue(
+                    check = PrivacyCheck.GOOGLE_PLAY_SERVICES,
+                    isSecure = false,
+                    isSystemApp = true,
+                    currentStatus = "Installed with full system privileges",
+                    technicalDetails = "Google Play Services has deep system access and telemetry"
+                )
+            }
         } catch (e: Exception) {
-            Log.e(TAG, "Error checking Find My Device", e)
+            Log.e(TAG, "Error checking Google Play Services", e)
             PrivacyIssue(
-                check = PrivacyCheck.FIND_MY_DEVICE,
-                isSecure = true, // Don't penalize on error
+                check = PrivacyCheck.GOOGLE_PLAY_SERVICES,
+                isSecure = true,
                 currentStatus = "Unable to determine",
                 technicalDetails = "Error: ${e.message}"
             )
@@ -54,28 +62,42 @@ class GoogleServicesChecker(private val context: Context) {
     }
 
     /**
-     * Alternative method to check Find My Device
-     * Checks if Google Play Services device admin is active
+     * Check if Google's Find My Device is active by looking for its package.
+     * com.google.android.apps.adm installed and enabled = Find My Device is active.
      */
-    private fun checkFindMyDeviceAlternative(): Boolean {
+    fun checkFindMyDevice(): PrivacyIssue {
         return try {
-            val devicePolicyManager = context.getSystemService(Context.DEVICE_POLICY_SERVICE)
-                as? android.app.admin.DevicePolicyManager
+            val appInfo = try {
+                context.packageManager.getApplicationInfo(FIND_MY_DEVICE_PACKAGE, 0)
+            } catch (e: PackageManager.NameNotFoundException) {
+                null
+            }
 
-            val activeAdmins = devicePolicyManager?.activeAdmins
+            val isActive = appInfo != null && appInfo.enabled
 
-            // Check if any Google Play Services component is a device admin
-            activeAdmins?.any { component ->
-                component.packageName.contains("google", ignoreCase = true) ||
-                component.packageName.contains("gms", ignoreCase = true)
-            } ?: false
+            PrivacyIssue(
+                check = PrivacyCheck.FIND_MY_DEVICE,
+                isSecure = !isActive,
+                currentStatus = if (isActive) "Enabled" else "Not installed / Not applicable",
+                technicalDetails = if (isActive)
+                    "$FIND_MY_DEVICE_PACKAGE is installed and enabled"
+                else
+                    "$FIND_MY_DEVICE_PACKAGE is not installed or is disabled"
+            )
         } catch (e: Exception) {
-            Log.w(TAG, "Alternative Find My Device check failed", e)
-            false
+            Log.e(TAG, "Error checking Find My Device", e)
+            PrivacyIssue(
+                check = PrivacyCheck.FIND_MY_DEVICE,
+                isSecure = true,
+                currentStatus = "Unable to determine",
+                technicalDetails = "Error: ${e.message}"
+            )
         }
     }
 
     companion object {
         private const val TAG = "GoogleServicesChecker"
+        private const val GMS_PACKAGE = "com.google.android.gms"
+        private const val FIND_MY_DEVICE_PACKAGE = "com.google.android.apps.adm"
     }
 }

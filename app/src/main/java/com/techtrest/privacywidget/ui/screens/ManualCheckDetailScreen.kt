@@ -2,6 +2,7 @@ package com.techtrest.privacywidget.ui.screens
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -57,8 +58,8 @@ import com.techtrest.privacywidget.data.model.ManualCheckState
 import com.techtrest.privacywidget.data.model.ManualCheckType
 import com.techtrest.privacywidget.ui.utils.IntentHelper
 
-private val HERO_ICON_SIZE = 48.dp
-private val HERO_ICON_CONTAINER_SIZE = 80.dp
+private val HERO_ICON_SIZE = 32.dp
+private val HERO_ICON_PADDING = 12.dp
 private val PROGRESS_BAR_HEIGHT = 8.dp
 
 /**
@@ -107,14 +108,16 @@ fun ManualCheckDetailScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(16.dp)
         ) {
             // 1. Hero area
+            Spacer(modifier = Modifier.height(8.dp))
             HeroSection(checkState = checkState)
+            Spacer(modifier = Modifier.height(24.dp))
 
             // 2. Progress card
             ProgressCard(checkState = checkState)
+            Spacer(modifier = Modifier.height(16.dp))
 
             // 3. Why This Matters (merged with What to Look For)
             ExpandableSectionCard(title = "Why This Matters") {
@@ -126,6 +129,8 @@ fun ManualCheckDetailScreen(
                 Spacer(modifier = Modifier.height(16.dp))
                 WhatToLookForContent(type = checkState.type)
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             // 4. How to Check
             ExpandableSectionCard(title = "How to Check") {
@@ -141,6 +146,8 @@ fun ManualCheckDetailScreen(
                     )
                 }
             }
+
+            Spacer(modifier = Modifier.height(24.dp))
 
             // 5. Action buttons
             Row(
@@ -187,21 +194,27 @@ private fun HeroSection(
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .size(HERO_ICON_CONTAINER_SIZE)
-                .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.primary),
-            contentAlignment = Alignment.Center
+        Card(
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.secondary
+            ),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
-            Icon(
-                imageVector = checkState.type.icon,
-                contentDescription = null,
-                modifier = Modifier.size(HERO_ICON_SIZE),
-                tint = MaterialTheme.colorScheme.onPrimary
-            )
+            Box(
+                modifier = Modifier.padding(HERO_ICON_PADDING),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = checkState.type.icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(HERO_ICON_SIZE),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
         }
 
         Text(

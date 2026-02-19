@@ -217,7 +217,6 @@ private fun SurveillanceChecksSection() {
                     PrivacyCheck.DEFAULT_SMS,
                     PrivacyCheck.DEFAULT_EMAIL,
                     PrivacyCheck.DEFAULT_LAUNCHER,
-                    PrivacyCheck.ALWAYS_ON_VPN,
                     PrivacyCheck.GOOGLE_CHROME,
                     PrivacyCheck.GMAIL_APP,
                     PrivacyCheck.GOOGLE_MAPS,

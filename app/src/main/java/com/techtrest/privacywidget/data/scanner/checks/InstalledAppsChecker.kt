@@ -1,7 +1,10 @@
 package com.techtrest.privacywidget.data.scanner.checks
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.os.Build
 import android.util.Log
 import com.techtrest.privacywidget.data.model.PackageNames
 import com.techtrest.privacywidget.data.model.PrivacyCheck
@@ -86,6 +89,82 @@ class InstalledAppsChecker(private val context: Context) {
     fun checkTwitterInstalled() = checkAppInstalled(PrivacyCheck.TWITTER_APP)
     fun checkRedditInstalled() = checkAppInstalled(PrivacyCheck.REDDIT_APP)
 
+    // ===== SYSTEM PERMISSION CHECKS =====
+
+    /**
+     * Check for third-party apps with ACCESS_BACKGROUND_LOCATION granted.
+     * Only runs on Android 11+ (API 30) where the permission model was tightened.
+     */
+    fun checkBackgroundLocationApps(): PrivacyIssue {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            return PrivacyIssue(
+                check = PrivacyCheck.BACKGROUND_LOCATION_APPS,
+                isSecure = true,
+                currentStatus = "Not applicable (Android < 11)",
+                technicalDetails = "Background location permission model requires Android 11+"
+            )
+        }
+
+        return try {
+            @Suppress("DEPRECATION")
+            val packages = packageManager.getInstalledPackages(PackageManager.GET_PERMISSIONS)
+            val appsWithBgLocation = mutableListOf<String>()
+
+            for (packageInfo in packages) {
+                val requestedPermissions = packageInfo.requestedPermissions ?: continue
+                val requestedPermissionsFlags = packageInfo.requestedPermissionsFlags ?: continue
+
+                val bgLocationIndex = requestedPermissions.indexOfFirst {
+                    it == Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                }
+
+                if (bgLocationIndex >= 0 &&
+                    (requestedPermissionsFlags[bgLocationIndex] and PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0 &&
+                    !isSystemApp(packageInfo.packageName)
+                ) {
+                    appsWithBgLocation.add(packageInfo.packageName)
+                }
+            }
+
+            if (appsWithBgLocation.isEmpty()) {
+                PrivacyIssue(
+                    check = PrivacyCheck.BACKGROUND_LOCATION_APPS,
+                    isSecure = true,
+                    currentStatus = "No third-party apps have background location",
+                    technicalDetails = "Checked ${packages.size} installed packages"
+                )
+            } else {
+                val count = appsWithBgLocation.size
+                val appNames = appsWithBgLocation.map { getAppName(it) }
+                val pointDeduction = count * PrivacyCheck.BACKGROUND_LOCATION_APPS.pointDeduction
+                val statusText = when {
+                    count <= 3 -> "$count app(s) have background location: ${appNames.joinToString(", ")}"
+                    else -> {
+                        val shown = appNames.take(3).joinToString(", ")
+                        val remaining = count - 3
+                        "$count app(s) have background location: $shown and $remaining more"
+                    }
+                }
+
+                PrivacyIssue(
+                    check = PrivacyCheck.BACKGROUND_LOCATION_APPS,
+                    isSecure = false,
+                    currentStatus = statusText,
+                    technicalDetails = "Packages: ${appsWithBgLocation.joinToString(", ")}",
+                    customPointDeduction = pointDeduction
+                )
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error checking background location apps", e)
+            PrivacyIssue(
+                check = PrivacyCheck.BACKGROUND_LOCATION_APPS,
+                isSecure = true,
+                currentStatus = "Unable to determine",
+                technicalDetails = "Error: ${e.message}"
+            )
+        }
+    }
+
     // ===== HELPER METHODS =====
 
     /**
@@ -102,10 +181,12 @@ class InstalledAppsChecker(private val context: Context) {
 
         return try {
             val isInstalled = isAppInstalled(packageName)
+            val isSystem = isInstalled && isSystemApp(packageName)
 
             PrivacyIssue(
                 check = check,
                 isSecure = !isInstalled,
+                isSystemApp = isSystem,
                 currentStatus = if (isInstalled) "Installed" else "Not installed",
                 technicalDetails = "Package: $packageName"
             )
@@ -167,6 +248,24 @@ class InstalledAppsChecker(private val context: Context) {
 
         Log.d(TAG, "✗ Package NOT found or DISABLED: $packageName")
         return false
+    }
+
+    private fun isSystemApp(packageName: String): Boolean {
+        return try {
+            val appInfo = packageManager.getApplicationInfo(packageName, 0)
+            (appInfo.flags and android.content.pm.ApplicationInfo.FLAG_SYSTEM) != 0
+        } catch (_: Exception) {
+            true // If we can't determine, assume system app to avoid false positives
+        }
+    }
+
+    private fun getAppName(packageName: String): String {
+        return try {
+            val appInfo = packageManager.getApplicationInfo(packageName, 0)
+            packageManager.getApplicationLabel(appInfo).toString()
+        } catch (_: Exception) {
+            packageName
+        }
     }
 
     companion object {

@@ -199,13 +199,6 @@ private fun collectPrivacyWins(privacyScore: PrivacyScore): List<String> {
     if (isSecure(PrivacyCheck.VPN_CONNECTION)) {
         wins.add("VPN protection active")
     }
-    if (isSecure(PrivacyCheck.ALWAYS_ON_VPN)) {
-        val issue = privacyScore.issues.find { it.check == PrivacyCheck.ALWAYS_ON_VPN }
-        // Only show if VPN is active and always-on is enabled (not "Not applicable")
-        if (issue?.currentStatus == "Enabled") {
-            wins.add("Always-On VPN enabled")
-        }
-    }
     if (isSecure(PrivacyCheck.ADVERTISING_ID)) {
         wins.add("Advertising ID disabled")
     }

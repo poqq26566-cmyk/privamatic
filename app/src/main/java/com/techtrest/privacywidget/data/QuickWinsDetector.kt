@@ -188,7 +188,7 @@ object QuickWinsDetector {
     private fun checkInstalledApps(privacyScore: PrivacyScore): List<QuickWin> {
         return installedAppChecks.mapNotNull { check ->
             val issue = privacyScore.issues.find { it.check == check }
-            if (issue != null && !issue.isSecure) {
+            if (issue != null && !issue.isSecure && !issue.isSystemApp) {
                 QuickWin(
                     type = QuickWinType.UNINSTALL_APP,
                     relatedCheck = check,
