@@ -7,12 +7,13 @@ enum class PrivacyCheck(
     val recommendation: String,
     val actionType: ActionType? = null,
     val actionLabel: String? = null,
-    val packageName: String? = null
+    val packageName: String? = null,
+    val isInformational: Boolean = false
 ) {
     // ===== SYSTEM SECURITY =====
     SCREEN_LOCK(
         displayName = "Screen Lock",
-        pointDeduction = 15,
+        pointDeduction = 11,
         description = "Device should have a screen lock enabled (PIN, pattern, password, or biometric)",
         recommendation = "Enable a screen lock in Settings > Security > Screen lock to protect your device from unauthorized access."
     ),
@@ -24,19 +25,19 @@ enum class PrivacyCheck(
     ),
     BIOMETRIC_AUTH(
         displayName = "Biometric Authentication",
-        pointDeduction = 3,
+        pointDeduction = 2,
         description = "Biometric authentication should be enabled for added security",
         recommendation = "Set up fingerprint or face unlock in Settings > Security > Biometrics for convenient and secure authentication."
     ),
     USB_DEBUGGING(
         displayName = "USB Debugging",
-        pointDeduction = 5,
+        pointDeduction = 4,
         description = "USB debugging should be disabled for security",
         recommendation = "Disable USB debugging in Settings > Developer options to prevent unauthorized access via USB connection."
     ),
     DEVELOPER_OPTIONS(
         displayName = "Developer Options",
-        pointDeduction = 3,
+        pointDeduction = 0,
         description = "Developer options should be disabled on production devices",
         recommendation = "Disable developer options in Settings > System > Developer options to reduce security risks."
     ),
@@ -50,7 +51,7 @@ enum class PrivacyCheck(
     ),
     ACCESSIBILITY_SERVICE(
         displayName = "Accessibility Service Abuse",
-        pointDeduction = 7,
+        pointDeduction = 5,
         description = "Apps with accessibility services can control your entire device and potentially keylog",
         recommendation = "Disable accessibility services for apps that don't legitimately need them in Settings > Accessibility.",
         actionType = ActionType.ACCESSIBILITY_SETTINGS,
@@ -58,7 +59,7 @@ enum class PrivacyCheck(
     ),
     DEVICE_ADMIN(
         displayName = "Device Administrator Apps",
-        pointDeduction = 5,
+        pointDeduction = 3,
         description = "Apps with device admin privileges have elevated control over your device",
         recommendation = "Review and remove device admin access for non-essential apps in Settings > Security > Device admin apps.",
         actionType = ActionType.DEVICE_ADMIN_SETTINGS,
@@ -76,25 +77,25 @@ enum class PrivacyCheck(
     // ===== NETWORK & TRACKING PRIVACY =====
     VPN_CONNECTION(
         displayName = "VPN Protection",
-        pointDeduction = 5,
+        pointDeduction = 7,
         description = "VPN should be active to protect network traffic",
         recommendation = "Enable a VPN connection to encrypt your internet traffic and protect your privacy online."
     ),
     PRIVATE_DNS(
         displayName = "Private DNS",
-        pointDeduction = 7,
+        pointDeduction = 6,
         description = "Private DNS (DNS over TLS/HTTPS) should be configured",
         recommendation = "Configure Private DNS in Settings > Network & internet > Private DNS. Recommended: dns.quad9.net (privacy-focused, blocks malware) or dns.adguard-dns.com (blocks ads and trackers)."
     ),
     ADVERTISING_ID(
         displayName = "Advertising ID",
-        pointDeduction = 7,
+        pointDeduction = 5,
         description = "Advertising ID enables cross-app tracking by advertisers",
         recommendation = "Disable or reset your Advertising ID in Settings > Privacy > Ads."
     ),
     WIFI_SCANNING(
         displayName = "Background Wi-Fi Scanning",
-        pointDeduction = 2,
+        pointDeduction = 1,
         description = "Background Wi-Fi/Bluetooth scanning can track your location",
         recommendation = "Disable Wi-Fi and Bluetooth scanning in Settings > Location > Wi-Fi and Bluetooth scanning to prevent location tracking."
     ),
@@ -102,7 +103,7 @@ enum class PrivacyCheck(
     // ===== GOOGLE SERVICES =====
     FIND_MY_DEVICE(
         displayName = "Find My Device",
-        pointDeduction = 2,
+        pointDeduction = 1,
         description = "Google's Find My Device tracks device location (security feature but privacy cost)",
         recommendation = "Disable Find My Device in Settings > Security > Find My Device if privacy is priority over theft protection."
     ),
@@ -208,7 +209,7 @@ enum class PrivacyCheck(
     // ===== GOOGLE APPS (MINOR) =====
     YOUTUBE(
         displayName = "YouTube",
-        pointDeduction = 0,
+        pointDeduction = 1,
         description = "YouTube app is installed on device",
         recommendation = "Consider using NewPipe or LibreTube as privacy-friendly YouTube alternatives.",
         actionType = ActionType.OPEN_APP_SETTINGS,
@@ -217,7 +218,7 @@ enum class PrivacyCheck(
     ),
     GOOGLE_CALENDAR(
         displayName = "Google Calendar",
-        pointDeduction = 0,
+        pointDeduction = 1,
         description = "Google Calendar app is installed on device",
         recommendation = "Uninstall Google Calendar and switch to Simple Calendar or offline calendar apps.",
         actionType = ActionType.OPEN_APP_SETTINGS,
@@ -226,7 +227,7 @@ enum class PrivacyCheck(
     ),
     GOOGLE_KEEP(
         displayName = "Google Keep",
-        pointDeduction = 0,
+        pointDeduction = 1,
         description = "Google Keep app is installed on device",
         recommendation = "Uninstall Google Keep and switch to Simple Notes or Standard Notes.",
         actionType = ActionType.OPEN_APP_SETTINGS,
@@ -235,7 +236,7 @@ enum class PrivacyCheck(
     ),
     GOOGLE_CAMERA(
         displayName = "Google Camera",
-        pointDeduction = 0,
+        pointDeduction = 1,
         description = "Google Camera app is installed on device",
         recommendation = "Uninstall Google Camera and switch to Open Camera or Simple Camera.",
         actionType = ActionType.OPEN_APP_SETTINGS,
@@ -244,7 +245,7 @@ enum class PrivacyCheck(
     ),
     GOOGLE_DOCS(
         displayName = "Google Docs",
-        pointDeduction = 0,
+        pointDeduction = 1,
         description = "Google Docs app is installed on device",
         recommendation = "Uninstall Google Docs and switch to Collabora Office or offline editors.",
         actionType = ActionType.OPEN_APP_SETTINGS,
@@ -311,7 +312,7 @@ enum class PrivacyCheck(
     ),
     ONEDRIVE_APP(
         displayName = "OneDrive",
-        pointDeduction = 0,
+        pointDeduction = 1,
         description = "Microsoft OneDrive app is installed on device",
         recommendation = "Uninstall OneDrive and switch to Nextcloud or Cryptomator.",
         actionType = ActionType.OPEN_APP_SETTINGS,
@@ -331,7 +332,7 @@ enum class PrivacyCheck(
     ),
     PRIME_VIDEO(
         displayName = "Prime Video",
-        pointDeduction = 0,
+        pointDeduction = 1,
         description = "Amazon Prime Video app is installed on device",
         recommendation = "Be aware that streaming apps collect viewing habits and device data.",
         actionType = ActionType.OPEN_APP_SETTINGS,
@@ -342,57 +343,63 @@ enum class PrivacyCheck(
     // ===== AI/LLM APPS =====
     CHATGPT_APP(
         displayName = "ChatGPT",
-        pointDeduction = 1,
-        description = "OpenAI ChatGPT app is installed on device",
-        recommendation = "Be aware that AI apps send your conversations to cloud servers for processing.",
+        pointDeduction = 0,
+        description = "AI apps process conversations on cloud servers — be mindful of what you share.",
+        recommendation = "AI apps process conversations on cloud servers — be mindful of what you share.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
-        packageName = PackageNames.CHATGPT
+        packageName = PackageNames.CHATGPT,
+        isInformational = true
     ),
     GOOGLE_GEMINI(
         displayName = "Google Gemini/Bard",
-        pointDeduction = 1,
-        description = "Google's AI assistant app is installed on device",
-        recommendation = "Be aware that AI apps send your conversations to cloud servers for processing.",
+        pointDeduction = 0,
+        description = "AI apps process conversations on cloud servers — be mindful of what you share.",
+        recommendation = "AI apps process conversations on cloud servers — be mindful of what you share.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
-        packageName = PackageNames.GEMINI
+        packageName = PackageNames.GEMINI,
+        isInformational = true
     ),
     MICROSOFT_COPILOT(
         displayName = "Microsoft Copilot",
-        pointDeduction = 1,
-        description = "Microsoft Copilot AI app is installed on device",
-        recommendation = "Be aware that AI apps send your conversations to cloud servers for processing.",
+        pointDeduction = 0,
+        description = "AI apps process conversations on cloud servers — be mindful of what you share.",
+        recommendation = "AI apps process conversations on cloud servers — be mindful of what you share.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
-        packageName = PackageNames.COPILOT
+        packageName = PackageNames.COPILOT,
+        isInformational = true
     ),
     CLAUDE_APP(
         displayName = "Claude",
-        pointDeduction = 1,
-        description = "Anthropic Claude app is installed on device",
-        recommendation = "Be aware that AI apps send your conversations to cloud servers for processing.",
+        pointDeduction = 0,
+        description = "AI apps process conversations on cloud servers — be mindful of what you share.",
+        recommendation = "AI apps process conversations on cloud servers — be mindful of what you share.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
-        packageName = PackageNames.CLAUDE
+        packageName = PackageNames.CLAUDE,
+        isInformational = true
     ),
     PERPLEXITY_APP(
         displayName = "Perplexity",
         pointDeduction = 0,
-        description = "Perplexity AI app is installed on device",
-        recommendation = "Be aware that AI apps send your searches to cloud servers for processing.",
+        description = "AI apps process conversations on cloud servers — be mindful of what you share.",
+        recommendation = "AI apps process conversations on cloud servers — be mindful of what you share.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
-        packageName = PackageNames.PERPLEXITY
+        packageName = PackageNames.PERPLEXITY,
+        isInformational = true
     ),
     META_AI(
         displayName = "Meta AI",
-        pointDeduction = 1,
-        description = "Meta AI app is installed on device",
-        recommendation = "Be aware that AI apps send your conversations to cloud servers for processing.",
+        pointDeduction = 0,
+        description = "AI apps process conversations on cloud servers — be mindful of what you share.",
+        recommendation = "AI apps process conversations on cloud servers — be mindful of what you share.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
-        packageName = PackageNames.META_AI
+        packageName = PackageNames.META_AI,
+        isInformational = true
     ),
 
     // ===== SOCIAL MEDIA =====
@@ -416,7 +423,7 @@ enum class PrivacyCheck(
     ),
     REDDIT_APP(
         displayName = "Reddit",
-        pointDeduction = 0,
+        pointDeduction = 1,
         description = "Official Reddit app is installed on device",
         recommendation = "Consider using privacy-focused Reddit clients like Infinity or Slide.",
         actionType = ActionType.OPEN_APP_SETTINGS,

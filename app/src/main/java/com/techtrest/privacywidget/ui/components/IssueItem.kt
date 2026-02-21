@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
@@ -38,6 +39,23 @@ fun IssueItem(issue: PrivacyIssue, modifier: Modifier = Modifier) {
     var isExpanded by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
+    val isInformational = issue.check.isInformational && !issue.isSecure
+    val statusIcon = when {
+        isInformational -> Icons.Default.Info
+        issue.isSecure -> Icons.Default.CheckCircle
+        else -> Icons.Default.Warning
+    }
+    val statusIconTint = when {
+        isInformational -> MaterialTheme.colorScheme.onSurfaceVariant
+        issue.isSecure -> MaterialTheme.colorScheme.primary
+        else -> MaterialTheme.colorScheme.tertiary
+    }
+    val statusIconDesc = when {
+        isInformational -> "Informational"
+        issue.isSecure -> "Secure"
+        else -> "Issue detected"
+    }
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -50,9 +68,9 @@ fun IssueItem(issue: PrivacyIssue, modifier: Modifier = Modifier) {
         ) {
             // Status icon
             Icon(
-                imageVector = if (issue.isSecure) Icons.Default.CheckCircle else Icons.Default.Warning,
-                contentDescription = if (issue.isSecure) "Secure" else "Issue detected",
-                tint = if (issue.isSecure) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary,
+                imageVector = statusIcon,
+                contentDescription = statusIconDesc,
+                tint = statusIconTint,
                 modifier = Modifier.size(24.dp)
             )
 
@@ -71,8 +89,8 @@ fun IssueItem(issue: PrivacyIssue, modifier: Modifier = Modifier) {
                 )
             }
 
-            // Point deduction badge
-            if (!issue.isSecure) {
+            // Point deduction badge - not shown for informational items
+            if (!issue.isSecure && !isInformational) {
                 Surface(
                     color = MaterialTheme.colorScheme.error,
                     shape = RoundedCornerShape(12.dp)
@@ -100,7 +118,37 @@ fun IssueItem(issue: PrivacyIssue, modifier: Modifier = Modifier) {
                     Column(
                         modifier = Modifier.padding(16.dp)
                     ) {
-                        if (!issue.isSecure) {
+                        if (isInformational) {
+                            Text(
+                                text = issue.check.description,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            issue.check.actionType?.let { actionType ->
+                                Spacer(modifier = Modifier.height(8.dp))
+                                OutlinedButton(
+                                    onClick = {
+                                        IntentHelper.launchActionIntent(
+                                            context = context,
+                                            actionType = actionType,
+                                            packageName = issue.check.packageName
+                                        )
+                                    },
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Settings,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = issue.check.actionLabel ?: "Fix",
+                                        style = MaterialTheme.typography.labelMedium
+                                    )
+                                }
+                            }
+                        } else if (!issue.isSecure) {
                             Text(
                                 text = "Recommendation:",
                                 style = MaterialTheme.typography.labelLarge,

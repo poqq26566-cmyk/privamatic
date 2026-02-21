@@ -2,7 +2,6 @@ package com.techtrest.privacywidget.data.scanner
 
 import com.techtrest.privacywidget.data.model.PrivacyIssue
 import com.techtrest.privacywidget.data.model.PrivacyScore
-import kotlin.math.max
 
 object PrivacyScoreCalculator {
 
@@ -31,7 +30,7 @@ object PrivacyScoreCalculator {
         // Start with MAX_SCORE (100), subtract both privacy issues and manual check deductions
         // Fresh install: 100 - 0 - 15 = 85/100 (all checks incomplete)
         // All completed: 100 - 0 - 0 = 100/100 (full points)
-        val score = max(0, MAX_SCORE - totalDeductions - manualCheckDeductions)
+        val score = (MAX_SCORE - totalDeductions - manualCheckDeductions).coerceIn(0, MAX_SCORE)
 
         return PrivacyScore(
             score = score,
