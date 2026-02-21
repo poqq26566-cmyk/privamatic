@@ -183,7 +183,7 @@ class PrivacyWidgetProvider : AppWidgetProvider() {
 
         // Apply per-widget opacity to background only (text/icons stay fully opaque)
         val opacity = WidgetPreferences.getOpacity(context, appWidgetId)
-        views.setFloat(R.id.widget_background, "setAlpha", opacity / 100f)
+        views.setInt(R.id.widget_background, "setAlpha", ((opacity / 100f) * 255).toInt())
 
         // On Android 11 and below (API < 31), android:theme on non-root RemoteViews
         // views is not properly supported and can cause RemoteViews inflation failure
