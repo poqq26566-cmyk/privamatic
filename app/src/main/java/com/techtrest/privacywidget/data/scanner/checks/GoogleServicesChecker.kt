@@ -2,6 +2,7 @@ package com.techtrest.privacywidget.data.scanner.checks
 
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import android.util.Log
 import com.techtrest.privacywidget.data.model.PrivacyCheck
 import com.techtrest.privacywidget.data.model.PrivacyIssue
@@ -85,8 +86,22 @@ class GoogleServicesChecker(private val context: Context) {
     /**
      * Check if Google's Find My Device is active by looking for its package.
      * com.google.android.apps.adm installed and enabled = Find My Device is active.
+     *
+     * On API 34+ (Android 14+), Find My Device is integrated into Google Play Services
+     * as "Find Hub". The standalone package exists only as a virtual stub and cannot be
+     * used as a signal. There is no public API to detect the enabled state, so we report
+     * it as undetectable and defer to the user.
      */
     fun checkFindMyDevice(): PrivacyIssue {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            return PrivacyIssue(
+                check = PrivacyCheck.FIND_MY_DEVICE,
+                isSecure = true,
+                customPointDeduction = 0,
+                currentStatus = "Cannot detect — verify in Settings > Security > Find Hub"
+            )
+        }
+
         return try {
             val appInfo = try {
                 context.packageManager.getApplicationInfo(FIND_MY_DEVICE_PACKAGE, 0)

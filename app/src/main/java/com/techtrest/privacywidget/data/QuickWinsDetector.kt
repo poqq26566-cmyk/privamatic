@@ -1,5 +1,6 @@
 package com.techtrest.privacywidget.data
 
+import android.os.Build
 import com.techtrest.privacywidget.data.model.ActionType
 import com.techtrest.privacywidget.data.model.PrivacyCheck
 import com.techtrest.privacywidget.data.model.PrivacyScore
@@ -117,6 +118,7 @@ object QuickWinsDetector {
     }
 
     private fun checkFindMyDevice(privacyScore: PrivacyScore): QuickWin? {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return null
         val issue = privacyScore.issues.find { it.check == PrivacyCheck.FIND_MY_DEVICE }
         return if (issue != null && !issue.isSecure) {
             QuickWin(

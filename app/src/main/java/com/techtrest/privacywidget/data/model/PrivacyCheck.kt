@@ -105,7 +105,7 @@ enum class PrivacyCheck(
         displayName = "Find My Device",
         pointDeduction = 1,
         description = "Google's Find My Device tracks device location (security feature but privacy cost)",
-        recommendation = "Disable Find My Device in Settings > Security > Find My Device if privacy is priority over theft protection."
+        recommendation = "Disable in Settings > Security > Find My Device (API < 34) or Find Hub (API 34+) if privacy is priority over theft protection."
     ),
     GOOGLE_PLAY_SERVICES(
         displayName = "Google Play Services",
