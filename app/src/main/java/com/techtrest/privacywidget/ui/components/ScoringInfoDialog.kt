@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.techtrest.privacywidget.data.scanner.PrivacyScoreCalculator
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,17 +43,19 @@ fun ScoringInfoDialog(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            ScoreRatingItem("85-100", "Excellent Privacy", "Strong privacy protection")
-            ScoreRatingItem("70-84", "Good Privacy", "Good privacy with minor issues")
-            ScoreRatingItem("50-69", "Fair Privacy", "Moderate privacy concerns")
-            ScoreRatingItem("30-49", "Poor Privacy", "Significant privacy issues")
-            ScoreRatingItem("0-29", "Critical Privacy Issues", "Critical vulnerabilities")
+            PrivacyScoreCalculator.ScoreRating.entries.forEach { rating ->
+                ScoreRatingItem(
+                    range = rating.scoreRange,
+                    label = rating.displayName,
+                    subtitle = rating.subtitle
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun ScoreRatingItem(range: String, rating: String, description: String) {
+private fun ScoreRatingItem(range: String, label: String, subtitle: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -66,12 +69,12 @@ private fun ScoreRatingItem(range: String, rating: String, description: String) 
         )
         Column {
             Text(
-                text = rating,
+                text = label,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold
             )
             Text(
-                text = description,
+                text = subtitle,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

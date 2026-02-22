@@ -183,7 +183,11 @@ class PrivacyWidgetProvider : AppWidgetProvider() {
 
         // Apply per-widget opacity to background only (text/icons stay fully opaque)
         val opacity = WidgetPreferences.getOpacity(context, appWidgetId)
-        views.setInt(R.id.widget_background, "setAlpha", ((opacity / 100f) * 255).toInt())
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            views.setFloat(R.id.widget_background, "setAlpha", opacity / 100f)
+        } else {
+            views.setInt(R.id.widget_background, "setImageAlpha", ((opacity / 100f) * 255).toInt())
+        }
 
         // On Android 11 and below (API < 31), android:theme on non-root RemoteViews
         // views is not properly supported and can cause RemoteViews inflation failure
@@ -323,12 +327,6 @@ class PrivacyWidgetProvider : AppWidgetProvider() {
             return false
         }
 
-        private fun PrivacyScoreCalculator.ScoreRating.toShortLabel(): String = when (this) {
-            PrivacyScoreCalculator.ScoreRating.EXCELLENT -> "Excellent"
-            PrivacyScoreCalculator.ScoreRating.GOOD -> "Good"
-            PrivacyScoreCalculator.ScoreRating.FAIR -> "Fair"
-            PrivacyScoreCalculator.ScoreRating.POOR -> "Poor"
-            PrivacyScoreCalculator.ScoreRating.CRITICAL -> "Critical"
-        }
+        private fun PrivacyScoreCalculator.ScoreRating.toShortLabel(): String = this.displayName
     }
 }

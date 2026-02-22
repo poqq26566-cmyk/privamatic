@@ -98,7 +98,7 @@ fun ScoreCard(
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = rating.description,
+                text = rating.subtitle,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

@@ -63,11 +63,11 @@ object PrivacyScoreCalculator {
         }
     }
 
-    enum class ScoreRating(val displayName: String, val description: String) {
-        EXCELLENT("Excellent Privacy", "Strong privacy protection"),
-        GOOD("Good Privacy", "Good privacy with minor issues"),
-        FAIR("Fair Privacy", "Fair privacy, room for improvement"),
-        POOR("Poor Privacy", "Poor privacy, needs attention"),
-        CRITICAL("Critical Privacy Issues", "Critical issues need fixing")
+    enum class ScoreRating(val displayName: String, val subtitle: String, val scoreRange: String) {
+        EXCELLENT("Excellent", "Strong protection", "85-100"),
+        GOOD("Good", "Good, with minor issues", "70-84"),
+        FAIR("Fair", "Room for improvement", "50-69"),
+        POOR("Needs Attention", "Several issues detected", "30-49"),
+        CRITICAL("Critical", "Immediate action required", "0-29")
     }
 }

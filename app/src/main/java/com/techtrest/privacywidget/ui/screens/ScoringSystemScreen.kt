@@ -1,13 +1,12 @@
 package com.techtrest.privacywidget.ui.screens
 
-import androidx.compose.foundation.background
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,6 +20,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,19 +35,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.techtrest.privacywidget.data.model.PrivacyCategory
 import com.techtrest.privacywidget.data.model.PrivacyCheck
-
-private const val SEVERITY_HIGH_THRESHOLD = 8
-private const val SEVERITY_MEDIUM_THRESHOLD = 4
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,10 +64,6 @@ fun ScoringSystemScreen(
 
     val informationalChecks = remember {
         PrivacyCheck.entries.filter { it.isInformational }
-    }
-
-    val globalMaxDeduction = remember {
-        PrivacyCheck.entries.maxOf { it.pointDeduction }
     }
 
     Scaffold(
@@ -112,16 +107,13 @@ fun ScoringSystemScreen(
                 CategorySection(
                     categoryName = category.displayName,
                     categoryIcon = category.icon,
-                    checks = checks,
-                    globalMaxDeduction = globalMaxDeduction
+                    checks = checks
                 )
             }
 
             if (informationalChecks.isNotEmpty()) {
                 InformationalSection(checks = informationalChecks)
             }
-
-            ScoringFooterNote()
         }
     }
 }
@@ -135,7 +127,7 @@ private fun ScoringIntroCard(modifier: Modifier = Modifier) {
         )
     ) {
         Text(
-            text = "Privamatic evaluates your device across security settings and surveillance tracking. Each check contributes to your overall privacy score out of 100.",
+            text = "Privamatic evaluates your device across security settings and surveillance tracking. Each check contributes to your overall privacy score out of 100 — starting at 100, with points deducted for detected issues, down to a minimum of 0.",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(16.dp)
@@ -148,10 +140,10 @@ private fun CategorySection(
     categoryName: String,
     categoryIcon: ImageVector,
     checks: List<PrivacyCheck>,
-    globalMaxDeduction: Int,
     modifier: Modifier = Modifier
 ) {
     val categoryMaxPoints = remember(checks) { checks.sumOf { it.pointDeduction } }
+    var expanded by remember { mutableStateOf(false) }
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -160,62 +152,60 @@ private fun CategorySection(
             containerColor = MaterialTheme.colorScheme.surface
         )
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            CategoryHeader(
-                name = categoryName,
-                icon = categoryIcon,
-                maxPoints = categoryMaxPoints
-            )
-
-            HorizontalDivider()
-
-            checks.forEach { check ->
-                CheckPointRow(
-                    check = check,
-                    globalMaxDeduction = globalMaxDeduction
+        Column {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { expanded = !expanded }
+                    .padding(16.dp)
+            ) {
+                Icon(
+                    imageVector = categoryIcon,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = categoryName,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.weight(1f)
+                )
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = MaterialTheme.colorScheme.primary
+                ) {
+                    Text(
+                        text = "up to $categoryMaxPoints pts",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Icon(
+                    imageVector = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = if (expanded) "Collapse" else "Expand",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(20.dp)
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun CategoryHeader(
-    name: String,
-    icon: ImageVector,
-    maxPoints: Int,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.fillMaxWidth()
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(24.dp)
-        )
-        Spacer(modifier = Modifier.width(12.dp))
-        Text(
-            text = name,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.weight(1f)
-        )
-        Surface(
-            shape = RoundedCornerShape(8.dp),
-            color = MaterialTheme.colorScheme.primaryContainer
-        ) {
-            Text(
-                text = "up to $maxPoints pts",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-            )
+            AnimatedVisibility(visible = expanded) {
+                Column(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .padding(bottom = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    HorizontalDivider()
+                    Spacer(modifier = Modifier.height(4.dp))
+                    checks.forEach { check ->
+                        CheckPointRow(check = check)
+                    }
+                }
+            }
         }
     }
 }
@@ -223,77 +213,32 @@ private fun CategoryHeader(
 @Composable
 private fun CheckPointRow(
     check: PrivacyCheck,
-    globalMaxDeduction: Int,
     modifier: Modifier = Modifier
 ) {
-    val barFraction = check.pointDeduction.toFloat() / globalMaxDeduction.toFloat()
-
-    val barColor = severityColor(check.pointDeduction)
-    val badgeContainerColor = severityContainerColor(check.pointDeduction)
-    val badgeContentColor = severityOnContainerColor(check.pointDeduction)
-
-    Column(modifier = modifier.fillMaxWidth()) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = check.displayName,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.weight(1f)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Surface(
+            shape = RoundedCornerShape(4.dp),
+            color = MaterialTheme.colorScheme.surfaceVariant
         ) {
             Text(
-                text = check.displayName,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.weight(1f)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Surface(
-                shape = RoundedCornerShape(4.dp),
-                color = badgeContainerColor
-            ) {
-                Text(
-                    text = "-${check.pointDeduction}",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = badgeContentColor,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(4.dp))
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(4.dp)
-                .clip(RoundedCornerShape(2.dp))
-                .background(MaterialTheme.colorScheme.surfaceVariant)
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(fraction = barFraction)
-                    .fillMaxHeight()
-                    .clip(RoundedCornerShape(2.dp))
-                    .background(barColor)
+                text = "-${check.pointDeduction}",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
             )
         }
     }
-}
-
-@Composable
-private fun severityColor(points: Int): Color = when {
-    points >= SEVERITY_HIGH_THRESHOLD -> MaterialTheme.colorScheme.error
-    points >= SEVERITY_MEDIUM_THRESHOLD -> MaterialTheme.colorScheme.tertiary
-    else -> MaterialTheme.colorScheme.secondary
-}
-
-@Composable
-private fun severityContainerColor(points: Int): Color = when {
-    points >= SEVERITY_HIGH_THRESHOLD -> MaterialTheme.colorScheme.errorContainer
-    points >= SEVERITY_MEDIUM_THRESHOLD -> MaterialTheme.colorScheme.tertiaryContainer
-    else -> MaterialTheme.colorScheme.secondaryContainer
-}
-
-@Composable
-private fun severityOnContainerColor(points: Int): Color = when {
-    points >= SEVERITY_HIGH_THRESHOLD -> MaterialTheme.colorScheme.onErrorContainer
-    points >= SEVERITY_MEDIUM_THRESHOLD -> MaterialTheme.colorScheme.onTertiaryContainer
-    else -> MaterialTheme.colorScheme.onSecondaryContainer
 }
 
 @Composable
@@ -355,7 +300,7 @@ private fun InformationalSection(
                     )
                     Surface(
                         shape = RoundedCornerShape(4.dp),
-                        color = MaterialTheme.colorScheme.outlineVariant
+                        color = MaterialTheme.colorScheme.surface
                     ) {
                         Text(
                             text = "Info",
@@ -367,23 +312,5 @@ private fun InformationalSection(
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun ScoringFooterNote(modifier: Modifier = Modifier) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer
-        )
-    ) {
-        Text(
-            text = "Your score starts at 100 and points are deducted based on detected issues. The minimum score is 0.",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSecondaryContainer,
-            fontWeight = FontWeight.Medium,
-            modifier = Modifier.padding(16.dp)
-        )
     }
 }

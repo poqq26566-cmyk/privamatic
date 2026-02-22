@@ -23,7 +23,7 @@ data class PrivacyScore(
  * Returns count of tracking/surveillance issues (excludes system security category).
  */
 fun PrivacyScore.getTrackingIssuesCount() =
-    issues.count { it.check !in PrivacyCategory.systemSecurityChecksSet && !it.isSecure }
+    issues.count { it.check !in PrivacyCategory.systemSecurityChecksSet && !it.isSecure && !it.check.isInformational }
 
 /**
  * Returns count of security issues (system security category only).
