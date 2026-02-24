@@ -37,7 +37,7 @@ enum class PrivacyCheck(
     ),
     DEVELOPER_OPTIONS(
         displayName = "Developer Options",
-        pointDeduction = 0,
+        pointDeduction = 1,
         description = "Developer options should be disabled on production devices",
         recommendation = "Disable developer options in Settings > System > Developer options to reduce security risks."
     ),

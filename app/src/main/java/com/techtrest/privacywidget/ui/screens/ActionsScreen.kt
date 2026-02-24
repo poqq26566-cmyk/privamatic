@@ -400,6 +400,7 @@ private fun getQuickWinShortName(quickWin: QuickWin): String {
         QuickWinType.DISABLE_WIFI_SCANNING -> "Disable Wi-Fi Scan"
         QuickWinType.DISABLE_ADVERTISING_ID -> "Disable Ad ID"
         QuickWinType.ENABLE_PRIVATE_DNS -> "Enable Private DNS"
+        QuickWinType.DISABLE_DEVELOPER_OPTIONS -> "Dev Options"
         QuickWinType.REPLACE_BROWSER -> quickWin.currentAppName ?: "Browser"
         QuickWinType.REPLACE_KEYBOARD -> quickWin.currentAppName ?: "Keyboard"
         QuickWinType.REPLACE_DEFAULT_SMS -> quickWin.currentAppName ?: "SMS"

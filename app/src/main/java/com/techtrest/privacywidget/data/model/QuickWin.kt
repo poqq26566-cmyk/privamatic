@@ -3,6 +3,7 @@ package com.techtrest.privacywidget.data.model
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Accessibility
 import androidx.compose.material.icons.filled.AdUnits
+import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Explore
@@ -155,6 +156,28 @@ enum class QuickWinType(
             4. Select 'Private DNS provider hostname'
             5. Enter: dns.quad9.net
             6. Tap 'Save'
+
+            After completing this, rescan to see your improved score!
+        """.trimIndent()
+    ),
+
+    DISABLE_DEVELOPER_OPTIONS(
+        title = "Disable Developer Options",
+        description = "Developer options should be disabled on production devices",
+        timeEstimate = "30 seconds",
+        icon = Icons.Default.Code,
+        actionType = ActionType.DEVELOPER_SETTINGS,
+        actionLabel = "Open Developer Settings",
+        instructions = """
+            Developer options expose advanced settings that can reduce device security if misconfigured.
+
+            Steps:
+            1. Open Settings app
+            2. Go to 'System' → 'Developer options'
+            3. Toggle off 'Developer options' at the top
+            4. Confirm
+
+            Note: If you need developer options for specific tasks, re-enable only when needed.
 
             After completing this, rescan to see your improved score!
         """.trimIndent()

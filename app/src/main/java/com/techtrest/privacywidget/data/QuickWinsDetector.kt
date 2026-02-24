@@ -37,6 +37,7 @@ object QuickWinsDetector {
         checkWifiScanning(privacyScore)?.let { quickWins.add(it) }
         checkAdvertisingId(privacyScore)?.let { quickWins.add(it) }
         checkPrivateDns(privacyScore)?.let { quickWins.add(it) }
+        checkDeveloperOptions(privacyScore)?.let { quickWins.add(it) }
 
         // Default app replacements
         checkDefaultBrowser(privacyScore)?.let { quickWins.add(it) }
@@ -111,6 +112,16 @@ object QuickWinsDetector {
             QuickWin(
                 type = QuickWinType.ENABLE_PRIVATE_DNS,
                 relatedCheck = PrivacyCheck.PRIVATE_DNS
+            )
+        } else null
+    }
+
+    private fun checkDeveloperOptions(privacyScore: PrivacyScore): QuickWin? {
+        val issue = privacyScore.issues.find { it.check == PrivacyCheck.DEVELOPER_OPTIONS }
+        return if (issue != null && !issue.isSecure) {
+            QuickWin(
+                type = QuickWinType.DISABLE_DEVELOPER_OPTIONS,
+                relatedCheck = PrivacyCheck.DEVELOPER_OPTIONS
             )
         } else null
     }

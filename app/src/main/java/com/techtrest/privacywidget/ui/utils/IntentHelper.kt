@@ -108,6 +108,12 @@ object IntentHelper {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 }
             }
+
+            ActionType.DEVELOPER_SETTINGS -> {
+                Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+            }
         }
     }
 
@@ -120,14 +126,16 @@ object IntentHelper {
             ActionType.PRIVACY_SETTINGS,
             ActionType.NETWORK_SETTINGS,
             ActionType.LOCATION_SETTINGS,
-            ActionType.SECURITY_SETTINGS -> {
+            ActionType.SECURITY_SETTINGS,
+            ActionType.DEVELOPER_SETTINGS -> {
                 Intent(Settings.ACTION_SETTINGS).apply {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 }
             }
 
             ActionType.DEFAULT_APPS_SETTINGS,
-            ActionType.APP_MANAGEMENT_SETTINGS -> {
+            ActionType.APP_MANAGEMENT_SETTINGS,
+            ActionType.DEVELOPER_SETTINGS -> {
                 Intent(Settings.ACTION_APPLICATION_SETTINGS).apply {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 }
