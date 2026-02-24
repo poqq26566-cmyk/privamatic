@@ -16,7 +16,13 @@ class NetworkSecurityChecker(private val context: Context) {
 
     fun checkVpnConnection(): PrivacyIssue {
         return try {
-            val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+                ?: return PrivacyIssue(
+                    check = PrivacyCheck.VPN_CONNECTION,
+                    isSecure = false,
+                    currentStatus = "Unable to determine",
+                    technicalDetails = "Connectivity service not available on this device"
+                )
             val hasVpn = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 val network = connectivityManager.activeNetwork
                 val capabilities = connectivityManager.getNetworkCapabilities(network)

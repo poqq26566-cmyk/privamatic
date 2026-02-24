@@ -20,7 +20,13 @@ class SystemServicesChecker(private val context: Context) {
      */
     fun checkDeviceEncryption(): PrivacyIssue {
         return try {
-            val devicePolicyManager = context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
+            val devicePolicyManager = context.getSystemService(Context.DEVICE_POLICY_SERVICE) as? DevicePolicyManager
+                ?: return PrivacyIssue(
+                    check = PrivacyCheck.DEVICE_ENCRYPTION,
+                    isSecure = true,
+                    currentStatus = "Unable to determine",
+                    technicalDetails = "Device policy service not available on this device"
+                )
             val encryptionStatus = devicePolicyManager.storageEncryptionStatus
             val isEncrypted = encryptionStatus == DevicePolicyManager.ENCRYPTION_STATUS_ACTIVE ||
                     encryptionStatus == DevicePolicyManager.ENCRYPTION_STATUS_ACTIVE_DEFAULT_KEY ||
@@ -110,7 +116,13 @@ class SystemServicesChecker(private val context: Context) {
      */
     fun checkAccessibilityServices(): PrivacyIssue {
         return try {
-            val accessibilityManager = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
+            val accessibilityManager = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as? AccessibilityManager
+                ?: return PrivacyIssue(
+                    check = PrivacyCheck.ACCESSIBILITY_SERVICE,
+                    isSecure = true,
+                    currentStatus = "Unable to determine",
+                    technicalDetails = "Accessibility service not available on this device"
+                )
             val enabledServices = accessibilityManager.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)
 
             if (enabledServices.isEmpty()) {
@@ -181,7 +193,13 @@ class SystemServicesChecker(private val context: Context) {
      */
     fun checkDeviceAdminApps(): PrivacyIssue {
         return try {
-            val devicePolicyManager = context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
+            val devicePolicyManager = context.getSystemService(Context.DEVICE_POLICY_SERVICE) as? DevicePolicyManager
+                ?: return PrivacyIssue(
+                    check = PrivacyCheck.DEVICE_ADMIN,
+                    isSecure = true,
+                    currentStatus = "Unable to determine",
+                    technicalDetails = "Device policy service not available on this device"
+                )
             val activeAdmins = devicePolicyManager.activeAdmins
 
             if (activeAdmins.isNullOrEmpty()) {

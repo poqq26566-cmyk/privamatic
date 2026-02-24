@@ -11,7 +11,13 @@ class SecuritySettingsChecker(private val context: Context) {
 
     fun checkScreenLock(): PrivacyIssue {
         return try {
-            val keyguardManager = context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+            val keyguardManager = context.getSystemService(Context.KEYGUARD_SERVICE) as? KeyguardManager
+                ?: return PrivacyIssue(
+                    check = PrivacyCheck.SCREEN_LOCK,
+                    isSecure = false,
+                    currentStatus = "Unable to determine",
+                    technicalDetails = "Keyguard service not available on this device"
+                )
             val isSecure = keyguardManager.isDeviceSecure
 
             PrivacyIssue(

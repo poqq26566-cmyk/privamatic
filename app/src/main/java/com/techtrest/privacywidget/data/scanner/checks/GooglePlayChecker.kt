@@ -9,7 +9,13 @@ class GooglePlayChecker(private val context: Context) {
 
     fun checkWifiScanning(): PrivacyIssue {
         return try {
-            val wifiManager = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+            val wifiManager = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as? WifiManager
+                ?: return PrivacyIssue(
+                    check = PrivacyCheck.WIFI_SCANNING,
+                    isSecure = true,
+                    currentStatus = "Unable to determine",
+                    technicalDetails = "Wi-Fi service not available on this device"
+                )
             val isScanAlwaysEnabled = wifiManager.isScanAlwaysAvailable
 
             PrivacyIssue(
