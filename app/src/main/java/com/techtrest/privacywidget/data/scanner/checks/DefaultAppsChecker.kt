@@ -14,64 +14,6 @@ class DefaultAppsChecker(private val context: Context) {
 
     private val packageManager: PackageManager = context.packageManager
 
-    init {
-        // Log all installed packages at initialization for debugging
-        logAllInstalledPackages()
-    }
-
-    private fun logAllInstalledPackages() {
-        try {
-            Log.d(TAG, "=== LISTING ALL INSTALLED PACKAGES ===")
-            val installedApps = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
-            Log.d(TAG, "Total installed applications: ${installedApps.size}")
-
-            // Log all Google packages
-            val googlePackages = installedApps.filter {
-                it.packageName.contains("google", ignoreCase = true)
-            }.sortedBy { it.packageName }
-
-            Log.d(TAG, "=== GOOGLE PACKAGES (${googlePackages.size}) ===")
-            googlePackages.forEach { app ->
-                val appName = packageManager.getApplicationLabel(app).toString()
-                Log.d(TAG, "  ${app.packageName} | $appName")
-            }
-
-            // Log all packages containing "maps"
-            val mapsPackages = installedApps.filter {
-                it.packageName.contains("maps", ignoreCase = true)
-            }
-            Log.d(TAG, "=== MAPS-RELATED PACKAGES (${mapsPackages.size}) ===")
-            mapsPackages.forEach { app ->
-                val appName = packageManager.getApplicationLabel(app).toString()
-                Log.d(TAG, "  ${app.packageName} | $appName")
-            }
-
-            // Log all packages containing "camera"
-            val cameraPackages = installedApps.filter {
-                it.packageName.contains("camera", ignoreCase = true)
-            }
-            Log.d(TAG, "=== CAMERA-RELATED PACKAGES (${cameraPackages.size}) ===")
-            cameraPackages.forEach { app ->
-                val appName = packageManager.getApplicationLabel(app).toString()
-                Log.d(TAG, "  ${app.packageName} | $appName")
-            }
-
-            // Log all packages containing "photo"
-            val photoPackages = installedApps.filter {
-                it.packageName.contains("photo", ignoreCase = true)
-            }
-            Log.d(TAG, "=== PHOTO-RELATED PACKAGES (${photoPackages.size}) ===")
-            photoPackages.forEach { app ->
-                val appName = packageManager.getApplicationLabel(app).toString()
-                Log.d(TAG, "  ${app.packageName} | $appName")
-            }
-
-            Log.d(TAG, "=== END PACKAGE LIST ===")
-        } catch (e: Exception) {
-            Log.e(TAG, "Error logging installed packages", e)
-        }
-    }
-
     /**
      * Check default browser app with three-tier detection
      * Privacy-invasive: Chrome, Edge, Opera, UC Browser (-3), Samsung Internet (-2)
@@ -86,13 +28,10 @@ class DefaultAppsChecker(private val context: Context) {
             var resolveInfo = packageManager.resolveActivity(browserIntent, PackageManager.MATCH_DEFAULT_ONLY)
             var packageName = resolveInfo?.activityInfo?.packageName
 
-            Log.d(TAG, "Default browser (MATCH_DEFAULT_ONLY): $packageName")
-
             // If no default, try without the flag to see what's available
             if (packageName == null || packageName == "android") {
                 resolveInfo = packageManager.resolveActivity(browserIntent, 0)
                 val fallbackPackage = resolveInfo?.activityInfo?.packageName
-                Log.d(TAG, "Fallback browser resolver: $fallbackPackage")
 
                 // If we got a real app (not the chooser), use it
                 if (fallbackPackage != null && fallbackPackage != "android") {
@@ -101,7 +40,6 @@ class DefaultAppsChecker(private val context: Context) {
             }
 
             val finalPackage = packageName ?: "none"
-            Log.d(TAG, "Final browser package: $finalPackage")
 
             // Privacy-invasive browsers
             val invasive = when {
@@ -188,7 +126,6 @@ class DefaultAppsChecker(private val context: Context) {
     fun checkDefaultSms(): PrivacyIssue {
         return try {
             val defaultSmsPackage = Telephony.Sms.getDefaultSmsPackage(context) ?: "none"
-            Log.d(TAG, "Default SMS package: $defaultSmsPackage")
 
             // Privacy-invasive messaging apps
             val invasive = when {
@@ -274,7 +211,6 @@ class DefaultAppsChecker(private val context: Context) {
     fun checkDefaultKeyboard(): PrivacyIssue {
         return try {
             val currentKeyboard = Settings.Secure.getString(context.contentResolver, Settings.Secure.DEFAULT_INPUT_METHOD) ?: "none"
-            Log.d(TAG, "Default keyboard IME: $currentKeyboard")
 
             // Privacy-friendly keyboards (allowlist)
             val friendly = when {
@@ -345,8 +281,6 @@ class DefaultAppsChecker(private val context: Context) {
 
             val resolveInfo = packageManager.resolveActivity(emailIntent, PackageManager.MATCH_DEFAULT_ONLY)
             val packageName = resolveInfo?.activityInfo?.packageName ?: "none"
-
-            Log.d(TAG, "Default email package: $packageName")
 
             // Privacy-invasive email apps
             val invasive = when {
@@ -433,8 +367,6 @@ class DefaultAppsChecker(private val context: Context) {
 
             val resolveInfo = packageManager.resolveActivity(launcherIntent, PackageManager.MATCH_DEFAULT_ONLY)
             val packageName = resolveInfo?.activityInfo?.packageName ?: "none"
-
-            Log.d(TAG, "Default launcher package: $packageName")
 
             // Privacy-invasive launchers
             val invasive = when {

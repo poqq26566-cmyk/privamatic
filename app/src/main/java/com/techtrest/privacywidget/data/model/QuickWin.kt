@@ -33,7 +33,7 @@ enum class QuickWinType(
         timeEstimate = "1 minute",
         icon = Icons.Default.NotificationsOff,
         actionType = ActionType.NOTIFICATION_LISTENER,
-        actionLabel = "Open Notification Access",
+        actionLabel = "Open Notification Settings",
         instructions = """
             Apps with notification listener access can read ALL your notifications, including 2FA codes and private messages.
 
@@ -163,7 +163,7 @@ enum class QuickWinType(
 
     DISABLE_DEVELOPER_OPTIONS(
         title = "Disable Developer Options",
-        description = "Developer options should be disabled on production devices",
+        description = "Reduces your exposure to advanced settings that can weaken security",
         timeEstimate = "30 seconds",
         icon = Icons.Default.Code,
         actionType = ActionType.DEVELOPER_SETTINGS,
@@ -191,7 +191,7 @@ enum class QuickWinType(
         timeEstimate = "2 minutes",
         icon = Icons.Default.Explore,
         actionType = ActionType.DEFAULT_APPS_SETTINGS,
-        actionLabel = "Open Default Apps",
+        actionLabel = "Open Default App Settings",
         instructions = """
             Privacy-focused browsers block trackers and don't sync your browsing history to cloud servers.
 
@@ -220,7 +220,7 @@ enum class QuickWinType(
         timeEstimate = "2 minutes",
         icon = Icons.Default.Keyboard,
         actionType = ActionType.DEFAULT_APPS_SETTINGS,
-        actionLabel = "Open Default Apps",
+        actionLabel = "Open Default App Settings",
         instructions = """
             Your current keyboard may send your typing data to cloud servers for processing.
 
@@ -252,7 +252,7 @@ enum class QuickWinType(
         timeEstimate = "2 minutes",
         icon = Icons.Default.Sms,
         actionType = ActionType.DEFAULT_APPS_SETTINGS,
-        actionLabel = "Open Default Apps",
+        actionLabel = "Open Default App Settings",
         instructions = """
             Your current SMS app may collect your messaging data and contacts.
 
@@ -278,7 +278,7 @@ enum class QuickWinType(
         timeEstimate = "2 minutes",
         icon = Icons.Default.Email,
         actionType = ActionType.DEFAULT_APPS_SETTINGS,
-        actionLabel = "Open Default Apps",
+        actionLabel = "Open Default App Settings",
         instructions = """
             Your current email app may scan your emails for advertising and data collection.
 
@@ -303,7 +303,7 @@ enum class QuickWinType(
         timeEstimate = "2 minutes",
         icon = Icons.Default.Home,
         actionType = ActionType.DEFAULT_APPS_SETTINGS,
-        actionLabel = "Open Default Apps",
+        actionLabel = "Open Default App Settings",
         instructions = """
             Your current launcher may collect usage patterns, app habits, and behavioral data.
 
@@ -330,7 +330,7 @@ enum class QuickWinType(
         timeEstimate = "30 seconds",
         icon = Icons.Default.Delete,
         actionType = ActionType.OPEN_APP_SETTINGS,
-        actionLabel = "Open App Info",
+        actionLabel = "Open App Settings",
         instructions = """
             You can improve your privacy by uninstalling or disabling this app.
 

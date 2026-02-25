@@ -3,7 +3,6 @@ package com.techtrest.privacywidget.ui.components
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -79,22 +78,9 @@ private const val CHANGE_EXPIRY_MS = 172_800_000L  // 48 hours
  * Detects the operating system/ROM running on the device
  */
 private fun detectOperatingSystem(context: Context): String {
-    // Debug logging to help diagnose detection issues
-    Log.d("DeviceInfo", "OS Detection Debug Info:")
-    Log.d("DeviceInfo", "  FINGERPRINT: ${Build.FINGERPRINT}")
-    Log.d("DeviceInfo", "  DISPLAY: ${Build.DISPLAY}")
-    Log.d("DeviceInfo", "  MANUFACTURER: ${Build.MANUFACTURER}")
-    Log.d("DeviceInfo", "  BRAND: ${Build.BRAND}")
-    Log.d("DeviceInfo", "  PRODUCT: ${Build.PRODUCT}")
-    Log.d("DeviceInfo", "  ID: ${Build.ID}")
-    Log.d("DeviceInfo", "  TAGS: ${Build.TAGS}")
-
     // Check GrapheneOS FIRST via system packages
     // GrapheneOS mimics stock Android in Build.FINGERPRINT for privacy/compatibility
-    if (isGrapheneOS(context)) {
-        Log.d("DeviceInfo", "  Detected: GrapheneOS (via system packages)")
-        return "GrapheneOS"
-    }
+    if (isGrapheneOS(context)) return "GrapheneOS"
 
     // Convert all Build properties to lowercase for case-insensitive comparison
     val fingerprint = Build.FINGERPRINT.lowercase()
@@ -103,59 +89,15 @@ private fun detectOperatingSystem(context: Context): String {
     val brand = Build.BRAND.lowercase()
 
     return when {
-        // CalyxOS
-        fingerprint.contains("calyx") || brand.contains("calyx") -> {
-            Log.d("DeviceInfo", "  Detected: CalyxOS")
-            "CalyxOS"
-        }
-
-        // LineageOS
-        display.contains("lineage") || fingerprint.contains("lineage") -> {
-            Log.d("DeviceInfo", "  Detected: LineageOS")
-            "LineageOS"
-        }
-
-        // /e/OS
-        display.contains("/e/") || display.contains("eos") || brand.contains("e_os") -> {
-            Log.d("DeviceInfo", "  Detected: /e/OS")
-            "/e/OS"
-        }
-
-        // Samsung One UI
-        manufacturer == "samsung" -> {
-            Log.d("DeviceInfo", "  Detected: Samsung One UI")
-            "Samsung One UI"
-        }
-
-        // Xiaomi MIUI
-        manufacturer == "xiaomi" -> {
-            Log.d("DeviceInfo", "  Detected: Xiaomi MIUI")
-            "Xiaomi MIUI"
-        }
-
-        // OnePlus OxygenOS
-        manufacturer == "oneplus" -> {
-            Log.d("DeviceInfo", "  Detected: OnePlus OxygenOS")
-            "OnePlus OxygenOS"
-        }
-
-        // Oppo/Realme ColorOS
-        manufacturer == "oppo" || manufacturer == "realme" -> {
-            Log.d("DeviceInfo", "  Detected: ColorOS")
-            "ColorOS"
-        }
-
-        // Stock Pixel/AOSP
-        manufacturer == "google" -> {
-            Log.d("DeviceInfo", "  Detected: Stock Android")
-            "Stock Android"
-        }
-
-        // Fallback
-        else -> {
-            Log.d("DeviceInfo", "  Detected: Generic Android")
-            "Android"
-        }
+        fingerprint.contains("calyx") || brand.contains("calyx") -> "CalyxOS"
+        display.contains("lineage") || fingerprint.contains("lineage") -> "LineageOS"
+        display.contains("/e/") || display.contains("eos") || brand.contains("e_os") -> "/e/OS"
+        manufacturer == "samsung" -> "Samsung One UI"
+        manufacturer == "xiaomi" -> "Xiaomi MIUI"
+        manufacturer == "oneplus" -> "OnePlus OxygenOS"
+        manufacturer == "oppo" || manufacturer == "realme" -> "ColorOS"
+        manufacturer == "google" -> "Stock Android"
+        else -> "Android"
     }
 }
 
@@ -176,7 +118,6 @@ private fun isGrapheneOS(context: Context): Boolean {
         try {
             @Suppress("DEPRECATION")
             context.packageManager.getPackageInfo(pkg, 0)
-            Log.d("DeviceInfo", "  GrapheneOS package found: $pkg")
             return true
         } catch (e: PackageManager.NameNotFoundException) {
             // Package not found, continue checking

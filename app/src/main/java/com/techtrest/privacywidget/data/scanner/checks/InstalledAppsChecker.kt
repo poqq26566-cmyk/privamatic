@@ -6,6 +6,7 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
+import com.techtrest.privacywidget.BuildConfig
 import com.techtrest.privacywidget.data.model.PackageNames
 import com.techtrest.privacywidget.data.model.PrivacyCheck
 import com.techtrest.privacywidget.data.model.PrivacyIssue
@@ -206,47 +207,30 @@ class InstalledAppsChecker(private val context: Context) {
      * Only returns true if the app is both installed and enabled.
      */
     private fun isAppInstalled(packageName: String): Boolean {
-        Log.d(TAG, "Checking for package: $packageName")
-
         // Method 1: Try getPackageInfo
         try {
             @Suppress("DEPRECATION")
             packageManager.getPackageInfo(packageName, PackageManager.GET_META_DATA)
             val appInfo = packageManager.getApplicationInfo(packageName, 0)
-            val isEnabled = appInfo.enabled
-
-            Log.d(TAG, "✓ Package found: $packageName (Enabled: $isEnabled)")
-
-            if (!isEnabled) {
-                Log.d(TAG, "⚠ Package is DISABLED - not counting as installed")
-                return false
-            }
+            if (!appInfo.enabled) return false
             return true
         } catch (e: PackageManager.NameNotFoundException) {
             // Package not found, continue to next method
         } catch (e: Exception) {
-            Log.w(TAG, "Error checking package $packageName: ${e.message}")
+            if (BuildConfig.DEBUG) Log.w(TAG, "Error checking package $packageName: ${e.message}")
         }
 
         // Method 2: Try getApplicationInfo
         try {
             val appInfo = packageManager.getApplicationInfo(packageName, 0)
-            val isEnabled = appInfo.enabled
-
-            Log.d(TAG, "✓ Package found via getApplicationInfo: $packageName (Enabled: $isEnabled)")
-
-            if (!isEnabled) {
-                Log.d(TAG, "⚠ Package is DISABLED - not counting as installed")
-                return false
-            }
+            if (!appInfo.enabled) return false
             return true
         } catch (e: PackageManager.NameNotFoundException) {
             // Package not found
         } catch (e: Exception) {
-            Log.w(TAG, "Error checking package $packageName: ${e.message}")
+            if (BuildConfig.DEBUG) Log.w(TAG, "Error checking package $packageName: ${e.message}")
         }
 
-        Log.d(TAG, "✗ Package NOT found or DISABLED: $packageName")
         return false
     }
 

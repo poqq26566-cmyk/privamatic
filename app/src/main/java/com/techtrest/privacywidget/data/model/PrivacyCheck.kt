@@ -20,7 +20,7 @@ enum class PrivacyCheck(
     DEVICE_ENCRYPTION(
         displayName = "Device Encryption",
         pointDeduction = 10,
-        description = "Device storage should be encrypted to protect data at rest",
+        description = "Device storage should be encrypted to protect your data if the device is lost or stolen",
         recommendation = "Enable device encryption in Settings > Security > Encryption (typically enabled by default on modern devices)."
     ),
     BIOMETRIC_AUTH(
@@ -38,7 +38,7 @@ enum class PrivacyCheck(
     DEVELOPER_OPTIONS(
         displayName = "Developer Options",
         pointDeduction = 1,
-        description = "Developer options should be disabled on production devices",
+        description = "Developer options should be disabled on personal devices",
         recommendation = "Disable developer options in Settings > System > Developer options to reduce security risks."
     ),
     NOTIFICATION_LISTENER(
@@ -50,9 +50,9 @@ enum class PrivacyCheck(
         actionLabel = "Manage Permissions"
     ),
     ACCESSIBILITY_SERVICE(
-        displayName = "Accessibility Service Abuse",
+        displayName = "Accessibility Service Access",
         pointDeduction = 5,
-        description = "Apps with accessibility services can control your entire device and potentially keylog",
+        description = "Apps with accessibility services can control your entire device and potentially log your keystrokes",
         recommendation = "Disable accessibility services for apps that don't legitimately need them in Settings > Accessibility.",
         actionType = ActionType.ACCESSIBILITY_SETTINGS,
         actionLabel = "Manage Services"
@@ -84,7 +84,7 @@ enum class PrivacyCheck(
     PRIVATE_DNS(
         displayName = "Private DNS",
         pointDeduction = 6,
-        description = "Private DNS (DNS over TLS/HTTPS) should be configured",
+        description = "Private DNS encrypts your web lookups so your internet provider can't see which sites you visit",
         recommendation = "Configure Private DNS in Settings > Network & internet > Private DNS. Recommended: dns.quad9.net (privacy-focused, blocks malware) or dns.adguard-dns.com (blocks ads and trackers)."
     ),
     ADVERTISING_ID(
@@ -105,14 +105,14 @@ enum class PrivacyCheck(
         displayName = "Find My Device",
         pointDeduction = 1,
         description = "Google's Find My Device tracks device location (security feature but privacy cost)",
-        recommendation = "Disable in Settings > Security > Find My Device (API < 34) or Find Hub (API 34+) if privacy is priority over theft protection.",
+        recommendation = "Disable in Settings > Security > Find My Device (or Find Hub on Android 14+) if privacy is a priority over theft protection.",
         isInformational = true
     ),
     GOOGLE_PLAY_SERVICES(
         displayName = "Google Play Services",
         pointDeduction = 8,
-        description = "Google Play Services with full system privileges enables extensive telemetry and data collection across all apps",
-        recommendation = "Consider using GrapheneOS to run Google Play Services in sandboxed mode, significantly reducing its access to your device.",
+        description = "Google Play Services has deep access to your device and enables extensive tracking and data collection across all apps",
+        recommendation = "Consider using GrapheneOS to run Google Play Services with limited access, significantly reducing its reach on your device.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
         packageName = "com.google.android.gms"
@@ -154,7 +154,7 @@ enum class PrivacyCheck(
     DEFAULT_LAUNCHER(
         displayName = "Default Launcher",
         pointDeduction = 2,
-        description = "Privacy-invasive launcher detected",
+        description = "Privacy-invasive launcher detected as default",
         recommendation = "Switch to a privacy-respecting launcher like Lawnchair, KISS Launcher, or Neo Launcher. Available on Google Play Store.",
         actionType = ActionType.DEFAULT_APPS_SETTINGS,
         actionLabel = "Change Default"
@@ -164,8 +164,8 @@ enum class PrivacyCheck(
     GOOGLE_CHROME(
         displayName = "Chrome",
         pointDeduction = 1,
-        description = "Google Chrome app is installed on device",
-        recommendation = "Uninstall Chrome and switch to Brave, Firefox, or DuckDuckGo Browser.",
+        description = "Google Chrome app is installed on your device",
+        recommendation = "Consider uninstalling Chrome and switching to Brave, Firefox, or DuckDuckGo Browser.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
         packageName = PackageNames.CHROME
@@ -173,8 +173,8 @@ enum class PrivacyCheck(
     GMAIL_APP(
         displayName = "Gmail",
         pointDeduction = 1,
-        description = "Gmail app is installed on device",
-        recommendation = "Uninstall Gmail and switch to K-9 Mail, FairEmail, or ProtonMail.",
+        description = "Gmail app is installed on your device",
+        recommendation = "Consider uninstalling Gmail and switching to K-9 Mail, FairEmail, or ProtonMail.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
         packageName = PackageNames.GMAIL
@@ -182,8 +182,8 @@ enum class PrivacyCheck(
     GOOGLE_MAPS(
         displayName = "Google Maps",
         pointDeduction = 1,
-        description = "Google Maps app is installed on device",
-        recommendation = "Uninstall Google Maps and switch to OsmAnd or Organic Maps.",
+        description = "Google Maps app is installed on your device",
+        recommendation = "Consider uninstalling Google Maps and switching to OsmAnd or Organic Maps.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
         packageName = PackageNames.GOOGLE_MAPS
@@ -191,8 +191,8 @@ enum class PrivacyCheck(
     GOOGLE_PHOTOS(
         displayName = "Google Photos",
         pointDeduction = 1,
-        description = "Google Photos app is installed on device",
-        recommendation = "Uninstall Google Photos and switch to Simple Gallery or Aves Libre.",
+        description = "Google Photos app is installed on your device",
+        recommendation = "Consider uninstalling Google Photos and switching to Simple Gallery or Aves Libre.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
         packageName = PackageNames.GOOGLE_PHOTOS
@@ -200,8 +200,8 @@ enum class PrivacyCheck(
     GOOGLE_DRIVE(
         displayName = "Google Drive",
         pointDeduction = 1,
-        description = "Google Drive app is installed on device",
-        recommendation = "Uninstall Google Drive and switch to Nextcloud or Cryptomator.",
+        description = "Google Drive app is installed on your device",
+        recommendation = "Consider uninstalling Google Drive and switching to Nextcloud or Cryptomator.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
         packageName = PackageNames.GOOGLE_DRIVE
@@ -211,7 +211,7 @@ enum class PrivacyCheck(
     YOUTUBE(
         displayName = "YouTube",
         pointDeduction = 1,
-        description = "YouTube app is installed on device",
+        description = "YouTube app is installed on your device",
         recommendation = "Consider using NewPipe or LibreTube as privacy-friendly YouTube alternatives.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
@@ -220,8 +220,8 @@ enum class PrivacyCheck(
     GOOGLE_CALENDAR(
         displayName = "Google Calendar",
         pointDeduction = 1,
-        description = "Google Calendar app is installed on device",
-        recommendation = "Uninstall Google Calendar and switch to Simple Calendar or offline calendar apps.",
+        description = "Google Calendar app is installed on your device",
+        recommendation = "Consider uninstalling Google Calendar and switching to Simple Calendar or an offline calendar app.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
         packageName = PackageNames.GOOGLE_CALENDAR
@@ -229,8 +229,8 @@ enum class PrivacyCheck(
     GOOGLE_KEEP(
         displayName = "Google Keep",
         pointDeduction = 1,
-        description = "Google Keep app is installed on device",
-        recommendation = "Uninstall Google Keep and switch to Simple Notes or Standard Notes.",
+        description = "Google Keep app is installed on your device",
+        recommendation = "Consider uninstalling Google Keep and switching to Simple Notes or Standard Notes.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
         packageName = PackageNames.GOOGLE_KEEP
@@ -238,8 +238,8 @@ enum class PrivacyCheck(
     GOOGLE_CAMERA(
         displayName = "Google Camera",
         pointDeduction = 1,
-        description = "Google Camera app is installed on device",
-        recommendation = "Uninstall Google Camera and switch to Open Camera or Simple Camera.",
+        description = "Google Camera app is installed on your device",
+        recommendation = "Consider uninstalling Google Camera and switching to Open Camera or Simple Camera.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
         packageName = PackageNames.GOOGLE_CAMERA
@@ -247,8 +247,8 @@ enum class PrivacyCheck(
     GOOGLE_DOCS(
         displayName = "Google Docs",
         pointDeduction = 1,
-        description = "Google Docs app is installed on device",
-        recommendation = "Uninstall Google Docs and switch to Collabora Office or offline editors.",
+        description = "Google Docs app is installed on your device",
+        recommendation = "Consider uninstalling Google Docs and switching to Collabora Office or an offline editor.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
         packageName = PackageNames.GOOGLE_DOCS
@@ -258,8 +258,8 @@ enum class PrivacyCheck(
     FACEBOOK_APP(
         displayName = "Facebook",
         pointDeduction = 1,
-        description = "Facebook app is installed on device",
-        recommendation = "Uninstall Facebook app and use the mobile website if needed, or quit Facebook entirely.",
+        description = "Facebook app is installed on your device",
+        recommendation = "Consider uninstalling the Facebook app and using the mobile website if needed.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
         packageName = PackageNames.FACEBOOK
@@ -267,8 +267,8 @@ enum class PrivacyCheck(
     INSTAGRAM_APP(
         displayName = "Instagram",
         pointDeduction = 1,
-        description = "Instagram app is installed on device",
-        recommendation = "Uninstall Instagram app and use the mobile website if needed, or consider alternatives.",
+        description = "Instagram app is installed on your device",
+        recommendation = "Consider uninstalling the Instagram app and using the mobile website if needed, or switching to Pixelfed.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
         packageName = PackageNames.INSTAGRAM
@@ -276,8 +276,8 @@ enum class PrivacyCheck(
     WHATSAPP_APP(
         displayName = "WhatsApp",
         pointDeduction = 1,
-        description = "WhatsApp (owned by Meta) is installed on device",
-        recommendation = "Uninstall WhatsApp and switch to Signal, Session, or SimpleX Chat.",
+        description = "WhatsApp is installed on your device",
+        recommendation = "Consider uninstalling WhatsApp and switching to Signal, Session, or SimpleX Chat.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
         packageName = PackageNames.WHATSAPP
@@ -285,8 +285,8 @@ enum class PrivacyCheck(
     MESSENGER_APP(
         displayName = "Messenger",
         pointDeduction = 1,
-        description = "Facebook Messenger app is installed on device",
-        recommendation = "Uninstall Messenger and use Signal or other privacy-focused messaging apps.",
+        description = "Facebook Messenger app is installed on your device",
+        recommendation = "Consider uninstalling Messenger and switching to Signal or another privacy-focused messaging app.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
         packageName = PackageNames.MESSENGER
@@ -296,8 +296,8 @@ enum class PrivacyCheck(
     EDGE_APP(
         displayName = "Microsoft Edge",
         pointDeduction = 1,
-        description = "Microsoft Edge app is installed on device",
-        recommendation = "Uninstall Edge and switch to Brave, Firefox, or DuckDuckGo Browser.",
+        description = "Microsoft Edge app is installed on your device",
+        recommendation = "Consider uninstalling Edge and switching to Brave, Firefox, or DuckDuckGo Browser.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
         packageName = PackageNames.EDGE
@@ -305,8 +305,8 @@ enum class PrivacyCheck(
     OUTLOOK_APP(
         displayName = "Outlook",
         pointDeduction = 1,
-        description = "Microsoft Outlook app is installed on device",
-        recommendation = "Uninstall Outlook and switch to K-9 Mail, FairEmail, or ProtonMail.",
+        description = "Microsoft Outlook app is installed on your device",
+        recommendation = "Consider uninstalling Outlook and switching to K-9 Mail, FairEmail, or ProtonMail.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
         packageName = PackageNames.OUTLOOK
@@ -314,8 +314,8 @@ enum class PrivacyCheck(
     ONEDRIVE_APP(
         displayName = "OneDrive",
         pointDeduction = 1,
-        description = "Microsoft OneDrive app is installed on device",
-        recommendation = "Uninstall OneDrive and switch to Nextcloud or Cryptomator.",
+        description = "Microsoft OneDrive app is installed on your device",
+        recommendation = "Consider uninstalling OneDrive and switching to Nextcloud or Cryptomator.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
         packageName = PackageNames.ONEDRIVE
@@ -325,7 +325,7 @@ enum class PrivacyCheck(
     AMAZON_SHOPPING(
         displayName = "Amazon Shopping",
         pointDeduction = 1,
-        description = "Amazon Shopping app is installed on device",
+        description = "Amazon Shopping app is installed on your device",
         recommendation = "Consider uninstalling and using the mobile website for better privacy.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
@@ -334,8 +334,8 @@ enum class PrivacyCheck(
     PRIME_VIDEO(
         displayName = "Prime Video",
         pointDeduction = 1,
-        description = "Amazon Prime Video app is installed on device",
-        recommendation = "Be aware that streaming apps collect viewing habits and device data.",
+        description = "Amazon Prime Video app is installed on your device",
+        recommendation = "Consider uninstalling Prime Video and using the mobile website instead. Streaming apps collect viewing habits and device data.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
         packageName = PackageNames.PRIME_VIDEO
@@ -345,18 +345,18 @@ enum class PrivacyCheck(
     CHATGPT_APP(
         displayName = "ChatGPT",
         pointDeduction = 0,
-        description = "AI apps process conversations on cloud servers — be mindful of what you share.",
-        recommendation = "AI apps process conversations on cloud servers — be mindful of what you share.",
+        description = "AI apps process conversations on cloud servers — be mindful of what you share",
+        recommendation = "Avoid sharing passwords, financial details, or personal information in AI conversations. Review your chat history and data settings in the app.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
         packageName = PackageNames.CHATGPT,
         isInformational = true
     ),
     GOOGLE_GEMINI(
-        displayName = "Google Gemini/Bard",
+        displayName = "Google Gemini",
         pointDeduction = 0,
-        description = "AI apps process conversations on cloud servers — be mindful of what you share.",
-        recommendation = "AI apps process conversations on cloud servers — be mindful of what you share.",
+        description = "AI apps process conversations on cloud servers — be mindful of what you share",
+        recommendation = "Avoid sharing passwords, financial details, or personal information in AI conversations. Review your chat history and data settings in the app.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
         packageName = PackageNames.GEMINI,
@@ -365,8 +365,8 @@ enum class PrivacyCheck(
     MICROSOFT_COPILOT(
         displayName = "Microsoft Copilot",
         pointDeduction = 0,
-        description = "AI apps process conversations on cloud servers — be mindful of what you share.",
-        recommendation = "AI apps process conversations on cloud servers — be mindful of what you share.",
+        description = "AI apps process conversations on cloud servers — be mindful of what you share",
+        recommendation = "Avoid sharing passwords, financial details, or personal information in AI conversations. Review your chat history and data settings in the app.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
         packageName = PackageNames.COPILOT,
@@ -375,8 +375,8 @@ enum class PrivacyCheck(
     CLAUDE_APP(
         displayName = "Claude",
         pointDeduction = 0,
-        description = "AI apps process conversations on cloud servers — be mindful of what you share.",
-        recommendation = "AI apps process conversations on cloud servers — be mindful of what you share.",
+        description = "AI apps process conversations on cloud servers — be mindful of what you share",
+        recommendation = "Avoid sharing passwords, financial details, or personal information in AI conversations. Review your chat history and data settings in the app.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
         packageName = PackageNames.CLAUDE,
@@ -385,8 +385,8 @@ enum class PrivacyCheck(
     PERPLEXITY_APP(
         displayName = "Perplexity",
         pointDeduction = 0,
-        description = "AI apps process conversations on cloud servers — be mindful of what you share.",
-        recommendation = "AI apps process conversations on cloud servers — be mindful of what you share.",
+        description = "AI apps process conversations on cloud servers — be mindful of what you share",
+        recommendation = "Avoid sharing passwords, financial details, or personal information in AI conversations. Review your chat history and data settings in the app.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
         packageName = PackageNames.PERPLEXITY,
@@ -395,8 +395,8 @@ enum class PrivacyCheck(
     META_AI(
         displayName = "Meta AI",
         pointDeduction = 0,
-        description = "AI apps process conversations on cloud servers — be mindful of what you share.",
-        recommendation = "AI apps process conversations on cloud servers — be mindful of what you share.",
+        description = "AI apps process conversations on cloud servers — be mindful of what you share",
+        recommendation = "Avoid sharing passwords, financial details, or personal information in AI conversations. Review your chat history and data settings in the app.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
         packageName = PackageNames.META_AI,
@@ -407,7 +407,7 @@ enum class PrivacyCheck(
     TIKTOK_APP(
         displayName = "TikTok",
         pointDeduction = 1,
-        description = "TikTok app is installed on device",
+        description = "TikTok app is installed on your device",
         recommendation = "Consider uninstalling TikTok due to extensive data collection practices.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
@@ -416,7 +416,7 @@ enum class PrivacyCheck(
     TWITTER_APP(
         displayName = "Twitter/X",
         pointDeduction = 1,
-        description = "Twitter/X app is installed on device",
+        description = "Twitter/X app is installed on your device",
         recommendation = "Consider using the mobile website instead of the app for better privacy.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
@@ -425,7 +425,7 @@ enum class PrivacyCheck(
     REDDIT_APP(
         displayName = "Reddit",
         pointDeduction = 1,
-        description = "Official Reddit app is installed on device",
+        description = "Reddit app is installed on your device",
         recommendation = "Consider using privacy-focused Reddit clients like Infinity or Slide.",
         actionType = ActionType.OPEN_APP_SETTINGS,
         actionLabel = "Open App Settings",
@@ -436,7 +436,7 @@ enum class PrivacyCheck(
     DEFAULT_ASSISTANT(
         displayName = "System Assistant/Search",
         pointDeduction = 0,
-        description = "System assistant status",
-        recommendation = "Disable Google Assistant/Alexa in Settings > Apps if enabled."
+        description = "Voice assistants can collect and process your conversations and search history",
+        recommendation = "Review your assistant settings in Settings > Apps and disable Google Assistant or Alexa if you don't use them."
     )
 }

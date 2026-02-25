@@ -94,8 +94,6 @@ class PrivacyWidgetProvider : AppWidgetProvider() {
                         scoreDelta != 0 &&
                         (System.currentTimeMillis() - scoreHistory.lastUpdateTimestamp) <= CHANGE_EXPIRY_MS
 
-                Log.d(TAG, "PRIVACY_CHANGE_DEBUG: score=$score, currentScore=${scoreHistory.currentScore}, dailyBaseline=${scoreHistory.dailyBaselineScore}, scoreDelta=$scoreDelta, showPrivacyChange=$showPrivacyChange, timeDiff=${System.currentTimeMillis() - scoreHistory.lastUpdateTimestamp}")
-
                 for (appWidgetId in appWidgetIds) {
                     updateWidget(
                         context = context,
@@ -158,13 +156,9 @@ class PrivacyWidgetProvider : AppWidgetProvider() {
         // Uses two separate TextViews (up/down) with XML-defined colors so that
         // theme changes (light↔dark) always resolve the correct color from
         // resource qualifiers, avoiding stale programmatic setTextColor values.
-        Log.d(TAG, "PRIVACY_CHANGE_DEBUG: updateWidget - showDelta=$showDelta, scoreDelta=$scoreDelta")
-
         if (showDelta && scoreDelta != null) {
             val isIncrease = scoreDelta > 0
             val changeText = "${if (isIncrease) "↑" else "↓"}${abs(scoreDelta)}"
-
-            Log.d(TAG, "PRIVACY_CHANGE_DEBUG: Setting visible - text=$changeText, isIncrease=$isIncrease")
 
             if (isIncrease) {
                 views.setTextViewText(R.id.widget_privacy_change_up, changeText)
@@ -176,7 +170,6 @@ class PrivacyWidgetProvider : AppWidgetProvider() {
                 views.setViewVisibility(R.id.widget_privacy_change_up, View.GONE)
             }
         } else {
-            Log.d(TAG, "PRIVACY_CHANGE_DEBUG: Hiding indicator")
             views.setViewVisibility(R.id.widget_privacy_change_up, View.GONE)
             views.setViewVisibility(R.id.widget_privacy_change_down, View.GONE)
         }
