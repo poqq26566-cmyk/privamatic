@@ -1,5 +1,6 @@
 package com.techtrest.privacywidget.ui.components
 
+import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -207,7 +208,11 @@ private fun collectPrivacyWins(privacyScore: PrivacyScore): List<String> {
     }
 
     // GOOGLE AVOIDANCE WINS
-    if (isSecure(PrivacyCheck.FIND_MY_DEVICE)) {
+    // On API 34+ (Android 14+) Find My Device migrated to Find Hub inside Play Services with
+    // no public API — the scanner returns isSecure=true to suppress deductions, but that does
+    // not mean the feature is actually disabled. Only claim the win on API <34 where the
+    // standalone package absence is a reliable signal.
+    if (isSecure(PrivacyCheck.FIND_MY_DEVICE) && Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         wins.add("Find My Device disabled")
     }
 

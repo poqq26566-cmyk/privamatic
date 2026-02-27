@@ -89,7 +89,7 @@ enum class PrivacyCheck(
     ),
     ADVERTISING_ID(
         displayName = "Advertising ID",
-        pointDeduction = 5,
+        pointDeduction = 0,
         description = "Advertising ID enables cross-app tracking by advertisers",
         recommendation = "Disable or reset your Advertising ID in Settings > Privacy > Ads."
     ),
@@ -104,9 +104,8 @@ enum class PrivacyCheck(
     FIND_MY_DEVICE(
         displayName = "Find My Device",
         pointDeduction = 1,
-        description = "Google's Find My Device tracks device location (security feature but privacy cost)",
-        recommendation = "Disable in Settings > Security > Find My Device (or Find Hub on Android 14+) if privacy is a priority over theft protection.",
-        isInformational = true
+        description = "Google's Find My Device / Find Hub tracks device location — a security feature with a privacy cost. On Android 14+ the enabled state cannot be programmatically detected.",
+        recommendation = "Disable in Settings > Security > Find My Device (or Find Hub on Android 14+) if privacy is a priority over theft protection."
     ),
     GOOGLE_PLAY_SERVICES(
         displayName = "Google Play Services",
