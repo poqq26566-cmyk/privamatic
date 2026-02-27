@@ -1,6 +1,5 @@
 package com.techtrest.privacywidget.ui.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,9 +11,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Dashboard
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.HorizontalDivider
@@ -38,6 +37,7 @@ import androidx.compose.ui.unit.dp
 fun PrivacyNavigationDrawer(
     drawerState: DrawerState,
     onScoringSystemClick: () -> Unit,
+    onSettingsClick: () -> Unit,
     onAboutClick: () -> Unit,
     content: @Composable () -> Unit
 ) {
@@ -68,14 +68,37 @@ fun PrivacyNavigationDrawer(
                     modifier = Modifier.padding(horizontal = 12.dp)
                 )
 
-                // Divider before About section
+                // Divider before Settings
                 Spacer(modifier = Modifier.height(8.dp))
                 HorizontalDivider(
                     modifier = Modifier.padding(horizontal = 12.dp)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // About Section
+                // Settings
+                NavigationDrawerItem(
+                    label = {
+                        Text(text = "Settings")
+                    },
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Settings,
+                            contentDescription = null
+                        )
+                    },
+                    selected = false,
+                    onClick = onSettingsClick,
+                    modifier = Modifier.padding(horizontal = 12.dp)
+                )
+
+                // Divider before About
+                Spacer(modifier = Modifier.height(8.dp))
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = 12.dp)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // About
                 NavigationDrawerItem(
                     label = {
                         Text(text = "About")

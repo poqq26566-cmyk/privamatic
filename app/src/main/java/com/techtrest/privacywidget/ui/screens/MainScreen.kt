@@ -93,6 +93,7 @@ fun MainScreen(viewModel: PrivacyViewModel = viewModel()) {
     var showInfoDialog by remember { mutableStateOf(false) }
     var showAboutDialog by remember { mutableStateOf(false) }
     var showScoringSystemScreen by remember { mutableStateOf(false) }
+    var showSettingsScreen by remember { mutableStateOf(false) }
     var showManualCheckDetail by remember { mutableStateOf<ManualCheckType?>(null) }
     var showQuickWinDetail by remember { mutableStateOf<QuickWin?>(null) }
     var showAdIdVerification by remember { mutableStateOf(false) }
@@ -125,6 +126,10 @@ fun MainScreen(viewModel: PrivacyViewModel = viewModel()) {
     BackHandler(enabled = showScoringSystemScreen) {
         showScoringSystemScreen = false
     }
+
+    BackHandler(enabled = showSettingsScreen) {
+        showSettingsScreen = false
+    }
     
     BackHandler(enabled = showAboutDialog) {
         showAboutDialog = false
@@ -144,6 +149,12 @@ fun MainScreen(viewModel: PrivacyViewModel = viewModel()) {
         drawerState = drawerState,
         onScoringSystemClick = {
             showScoringSystemScreen = true
+            scope.launch {
+                drawerState.close()
+            }
+        },
+        onSettingsClick = {
+            showSettingsScreen = true
             scope.launch {
                 drawerState.close()
             }
@@ -352,6 +363,13 @@ fun MainScreen(viewModel: PrivacyViewModel = viewModel()) {
     if (showScoringSystemScreen) {
         ScoringSystemScreen(
             onBackClick = { showScoringSystemScreen = false }
+        )
+    }
+
+    // Settings Screen
+    if (showSettingsScreen) {
+        SettingsScreen(
+            onBackClick = { showSettingsScreen = false }
         )
     }
 
