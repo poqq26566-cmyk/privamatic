@@ -408,12 +408,19 @@ fun MainScreen(viewModel: PrivacyViewModel = viewModel()) {
     // Advertising ID Verification Screen
     if (showAdIdVerification) {
         AdIdVerificationScreen(
+            lastCompletedTimestamp = checkStates.find { it.type == ManualCheckType.ADVERTISING_ID_CHECK }?.lastCompletedTimestamp ?: 0L,
             onBackClick = { showAdIdVerification = false },
             onConfirmed = {
                 scope.launch {
                     maintenanceManager.markCheckCompleted(ManualCheckType.ADVERTISING_ID_CHECK)
                     viewModel.performScan()
                     showAdIdVerification = false
+                }
+            },
+            onReset = {
+                scope.launch {
+                    maintenanceManager.resetAdIdCheck()
+                    viewModel.performScan()
                 }
             }
         )

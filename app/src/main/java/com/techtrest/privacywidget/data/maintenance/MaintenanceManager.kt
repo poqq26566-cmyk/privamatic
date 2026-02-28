@@ -6,9 +6,11 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.techtrest.privacywidget.data.OnboardingPreferences
 import com.techtrest.privacywidget.data.model.ManualCheckState
 import com.techtrest.privacywidget.data.model.ManualCheckType
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import java.time.Instant
 import java.time.LocalDate
@@ -38,21 +40,47 @@ class MaintenanceManager(private val context: Context) {
     }
 
     /**
+     * Reset the Advertising ID check. Clears both the DataStore timestamp and
+     * the SharedPreferences written by AdIdVerificationScreen (ad_id_prefs:
+     * ad_id_verified, ad_id_verified_timestamp). Both stores must be cleared
+     * so that scoring (DataStore) and scan results (SharedPreferences) agree.
+     */
+    suspend fun resetAdIdCheck() {
+        val key = longPreferencesKey("manual_check_${ManualCheckType.ADVERTISING_ID_CHECK.name}_timestamp")
+        context.maintenanceDataStore.edit { preferences ->
+            preferences.remove(key)
+        }
+        context.getSharedPreferences("ad_id_prefs", Context.MODE_PRIVATE)
+            .edit()
+            .remove("ad_id_verified")
+            .remove("ad_id_verified_timestamp")
+            .apply()
+        OnboardingPreferences(context).setForceShowAdIdCheck(false)
+    }
+
+    /**
      * Get current states for all manual checks.
      * Calculates days remaining, fill percentage, and overdue status.
      *
      * ADVERTISING_ID_CHECK is hidden once completed until it becomes overdue again,
      * since it only needs to be verified once every 180 days. All other check types
      * are always included regardless of completion state.
+     *
+     * The force-show flag is consumed as a Flow so that toggling it in Settings
+     * immediately updates the list without waiting for DataStore to re-emit.
      */
     fun getCheckStates(): Flow<List<ManualCheckState>> {
-        return context.maintenanceDataStore.data.map { preferences ->
+        return combine(
+            context.maintenanceDataStore.data,
+            OnboardingPreferences(context).forceShowAdIdCheckFlow()
+        ) { preferences, forceShow ->
             ManualCheckType.entries
                 .map { type -> calculateCheckState(type, preferences) }
                 .filter { state ->
                     state.type != ManualCheckType.ADVERTISING_ID_CHECK ||
                         state.lastCompletedTimestamp == 0L ||
-                        state.isOverdue
+                        state.isOverdue ||
+                        forceShow
                 }
         }
     }

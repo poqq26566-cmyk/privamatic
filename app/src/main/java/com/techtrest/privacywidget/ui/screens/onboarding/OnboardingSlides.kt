@@ -278,7 +278,7 @@ fun HowItWorksSlide(modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(40.dp))
 
         Text(
-            text = "Privamatic audits over 50 settings across system security, network, tracking, and your installed apps. Each finding is weighted by real-world impact, so your score reflects what actually matters.",
+            text = "50+ checks across security, tracking, and your apps. Weighted by real-world impact.",
             style = MaterialTheme.typography.bodyLarge,
             color = Cream.copy(alpha = 0.8f),
             textAlign = TextAlign.Center
@@ -327,7 +327,7 @@ fun PragmaticSlide(modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Every recommendation is chosen because it delivers real protection. Meaningful improvements, zero unnecessary trade-offs.",
+            text = "Privacy that fits real life. No paranoia, no impossible standards — just meaningful improvements.",
             style = MaterialTheme.typography.bodyLarge,
             color = Cream.copy(alpha = 0.8f),
             textAlign = TextAlign.Center

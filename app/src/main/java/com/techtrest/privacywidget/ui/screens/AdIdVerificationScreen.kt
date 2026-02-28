@@ -21,6 +21,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.TrackChanges
 import androidx.compose.material3.Button
@@ -40,13 +41,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.techtrest.privacywidget.data.scanner.checks.NetworkSecurityChecker
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.delay
 
 private const val CORRECT_ANSWER_INDEX = 2
@@ -67,8 +73,10 @@ private val QUIZ_ANSWERS = listOf(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdIdVerificationScreen(
+    lastCompletedTimestamp: Long,
     onBackClick: () -> Unit,
     onConfirmed: () -> Unit,
+    onReset: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     BackHandler {
@@ -76,6 +84,7 @@ fun AdIdVerificationScreen(
     }
 
     val context = LocalContext.current
+    var showQuiz by rememberSaveable { mutableStateOf(lastCompletedTimestamp == 0L) }
     var selectedAnswer by rememberSaveable { mutableStateOf(-1) }
     var hasAnsweredCorrectly by rememberSaveable { mutableStateOf(false) }
 
@@ -124,58 +133,156 @@ fun AdIdVerificationScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Explanation card
-            ExplanationCard()
-
-            // Quiz card
-            QuizCard(
-                selectedAnswer = selectedAnswer,
-                hasAnsweredCorrectly = hasAnsweredCorrectly,
-                onAnswerSelected = { index ->
-                    if (index == selectedAnswer) {
-                        // Tapping the currently selected answer deselects it
+            if (!showQuiz) {
+                ConfirmedView(
+                    lastCompletedTimestamp = lastCompletedTimestamp,
+                    onReset = {
                         selectedAnswer = -1
                         hasAnsweredCorrectly = false
-                    } else {
-                        selectedAnswer = index
-                        hasAnsweredCorrectly = (index == CORRECT_ANSWER_INDEX)
+                        showQuiz = true
+                        onReset()
                     }
+                )
+            } else {
+                // Explanation card
+                ExplanationCard()
+
+                // Quiz card
+                QuizCard(
+                    selectedAnswer = selectedAnswer,
+                    hasAnsweredCorrectly = hasAnsweredCorrectly,
+                    onAnswerSelected = { index ->
+                        if (index == selectedAnswer) {
+                            // Tapping the currently selected answer deselects it
+                            selectedAnswer = -1
+                            hasAnsweredCorrectly = false
+                        } else {
+                            selectedAnswer = index
+                            hasAnsweredCorrectly = (index == CORRECT_ANSWER_INDEX)
+                        }
+                    }
+                )
+
+                // Open settings button
+                OutlinedButton(
+                    onClick = { launchAdSettings(context) },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.OpenInNew,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Open Ad Settings")
                 }
+
+                // Confirm button — enabled only after correct quiz answer
+                Button(
+                    onClick = {
+                        saveVerification(context)
+                        onConfirmed()
+                    },
+                    enabled = hasAnsweredCorrectly,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.TrackChanges,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("I've deleted my Advertising ID")
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+        }
+    }
+}
+
+private val DATE_FORMATTER = DateTimeFormatter.ofPattern("MMM d, yyyy")
+private const val REVIEW_PERIOD_DAYS = 180L
+
+@Composable
+private fun ConfirmedView(
+    lastCompletedTimestamp: Long,
+    onReset: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val confirmedDate = remember(lastCompletedTimestamp) {
+        Instant.ofEpochMilli(lastCompletedTimestamp)
+            .atZone(ZoneId.systemDefault())
+            .toLocalDate()
+            .format(DATE_FORMATTER)
+    }
+    val nextReviewDate = remember(lastCompletedTimestamp) {
+        Instant.ofEpochMilli(lastCompletedTimestamp)
+            .atZone(ZoneId.systemDefault())
+            .toLocalDate()
+            .plusDays(REVIEW_PERIOD_DAYS)
+            .format(DATE_FORMATTER)
+    }
+
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Icon(
+            imageVector = Icons.Default.CheckCircle,
+            contentDescription = null,
+            modifier = Modifier.size(72.dp),
+            tint = MaterialTheme.colorScheme.primary
+        )
+
+        Text(
+            text = "Advertising ID Deleted",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = "Confirmed on $confirmedDate",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = "Next review: $nextReviewDate",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+
+        OutlinedButton(
+            onClick = onReset,
+            modifier = Modifier.fillMaxWidth(),
+            border = BorderStroke(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.error
+            ),
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = MaterialTheme.colorScheme.error
             )
-
-            // Open settings button
-            OutlinedButton(
-                onClick = { launchAdSettings(context) },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(
-                    imageVector = Icons.Default.OpenInNew,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Open Ad Settings")
-            }
-
-            // Confirm button — enabled only after correct quiz answer
-            Button(
-                onClick = {
-                    saveVerification(context)
-                    onConfirmed()
-                },
-                enabled = hasAnsweredCorrectly,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(
-                    imageVector = Icons.Default.TrackChanges,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("I've deleted my Advertising ID")
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
+        ) {
+            Text("Reset verification")
         }
     }
 }
@@ -294,7 +401,6 @@ private fun saveVerification(context: Context) {
     context.getSharedPreferences(NetworkSecurityChecker.AD_ID_PREFS_NAME, Context.MODE_PRIVATE)
         .edit()
         .putBoolean(NetworkSecurityChecker.KEY_AD_ID_VERIFIED, true)
-        .putLong(NetworkSecurityChecker.KEY_AD_ID_TIMESTAMP, System.currentTimeMillis())
         .apply()
 }
 
