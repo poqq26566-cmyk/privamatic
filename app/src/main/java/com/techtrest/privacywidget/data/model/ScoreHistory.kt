@@ -10,12 +10,17 @@ package com.techtrest.privacywidget.data.model
  *
  * [dailyBaselineTimestamp] is the midnight timestamp of the day the baseline was set.
  * [lastUpdateTimestamp] is the wall-clock time of the most recent [recordScore] call.
+ * [deltaFirstAppearedTimestamp] is the wall-clock time when the current non-zero delta was
+ * first recorded. Reset to 0 when the delta returns to zero. Used to measure the 48-hour
+ * widget change-indicator window from the moment the change actually occurred, not from the
+ * most recent scan time.
  */
 data class ScoreHistory(
     val currentScore: Int,
     val dailyBaselineScore: Int?,
     val dailyBaselineTimestamp: Long,
-    val lastUpdateTimestamp: Long
+    val lastUpdateTimestamp: Long,
+    val deltaFirstAppearedTimestamp: Long = 0L
 ) {
     /**
      * Cumulative points gained or lost since the daily baseline.

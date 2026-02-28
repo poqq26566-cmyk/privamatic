@@ -19,8 +19,11 @@ fun AboutDialog(
         title = {
             Text(
                 text = buildAnnotatedString {
+                    withStyle(SpanStyle(fontWeight = FontWeight.Normal)) {
+                        append("About ")
+                    }
                     withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append("About PRIVA")
+                        append("PRIVA")
                     }
                     withStyle(SpanStyle(fontWeight = FontWeight.Normal)) {
                         append("matic")
@@ -32,11 +35,11 @@ fun AboutDialog(
         text = {
             Text(
                 text = """
-                    Privamatic helps you understand and improve your device's privacy posture through comprehensive auditing of system settings and installed applications.
+                    Privamatic gives your Android device a privacy score — a clear, actionable number that shows how exposed you are and what to fix.
 
-                    Built with privacy-first principles, this app performs all analysis locally on your device with no telemetry or data collection. It identifies privacy risks from invasive apps and system misconfigurations, providing actionable recommendations to strengthen your digital privacy.
+                    All analysis runs locally on your device. No telemetry, no data collection, no network requests, no Google Play Services. Everything stays with you.
 
-                    Designed for privacy-conscious users, GrapheneOS enthusiasts, and anyone seeking to de-Google their Android experience.
+                    Built for privacy-conscious users, developers, and anyone who wants to understand and improve their Android privacy — no technical knowledge required.
 
                     Open source and available on F-Droid.
                 """.trimIndent(),

@@ -8,6 +8,7 @@ import com.techtrest.privacywidget.data.ScoreHistoryRepository
 import com.techtrest.privacywidget.data.model.PrivacyScore
 import com.techtrest.privacywidget.data.model.ScoreHistory
 import com.techtrest.privacywidget.data.scanner.PrivacyScanner
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
@@ -34,6 +35,7 @@ class PrivacyViewModel(application: Application) : AndroidViewModel(application)
     private val _scoreHistory = MutableStateFlow<ScoreHistory?>(null)
     val scoreHistory: StateFlow<ScoreHistory?> = _scoreHistory.asStateFlow()
 
+    private var currentScanJob: Job? = null
     private var isInitialLoad = true
 
     init {
@@ -42,7 +44,8 @@ class PrivacyViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun performScan() {
-        viewModelScope.launch {
+        currentScanJob?.cancel()
+        currentScanJob = viewModelScope.launch {
             _scanState.value = PrivacyScanState.Scanning
             try {
                 // Run scan
@@ -67,7 +70,12 @@ class PrivacyViewModel(application: Application) : AndroidViewModel(application)
                     _scoreHistory.value = scoreHistoryRepository.recordScore(result.score)
                     _scanState.value = PrivacyScanState.Success(result)
                 }
-                // Keep the home screen widget in sync with the latest scan result
+                // Keep the home screen widget in sync with the latest scan result.
+                // NOTE: This triggers a second full scan inside PrivacyWidgetProvider.onUpdate.
+                // Passing the computed score directly would require shared storage and a
+                // conditional scan path in the widget, which introduces regression risk.
+                // The redundant scan is intentionally left as-is; it runs on a SupervisorJob
+                // in a separate process context and has no impact on the UI scan result.
                 PrivacyWidgetProvider.requestImmediateUpdate(getApplication())
             } catch (e: Exception) {
                 _scanState.value = PrivacyScanState.Error(

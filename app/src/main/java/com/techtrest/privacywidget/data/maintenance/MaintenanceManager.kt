@@ -9,9 +9,11 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.techtrest.privacywidget.data.OnboardingPreferences
 import com.techtrest.privacywidget.data.model.ManualCheckState
 import com.techtrest.privacywidget.data.model.ManualCheckType
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -45,7 +47,7 @@ class MaintenanceManager(private val context: Context) {
      * ad_id_verified, ad_id_verified_timestamp). Both stores must be cleared
      * so that scoring (DataStore) and scan results (SharedPreferences) agree.
      */
-    suspend fun resetAdIdCheck() {
+    suspend fun resetAdIdCheck() = withContext(NonCancellable) {
         val key = longPreferencesKey("manual_check_${ManualCheckType.ADVERTISING_ID_CHECK.name}_timestamp")
         context.maintenanceDataStore.edit { preferences ->
             preferences.remove(key)
@@ -166,6 +168,9 @@ class MaintenanceManager(private val context: Context) {
             ManualCheckType.entries
                 .map { type -> calculateCheckState(type, preferences) }
                 .filter {
+                    // ADVERTISING_ID_CHECK is intentionally asymmetric: deleting the Ad ID is
+                    // a permanent action, so points are kept even when the check becomes overdue.
+                    // All other check types are periodic and lose points the moment they are overdue.
                     if (it.type == ManualCheckType.ADVERTISING_ID_CHECK)
                         it.lastCompletedTimestamp != 0L
                     else

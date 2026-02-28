@@ -34,43 +34,66 @@ class ScoreHistoryRepository(context: Context) {
                     .putInt(KEY_DAILY_BASELINE_SCORE, newScore)
                     .putLong(KEY_DAILY_BASELINE_TIMESTAMP, todayMidnight)
                     .putLong(KEY_LAST_UPDATE_TIMESTAMP, now)
+                    .putLong(KEY_DELTA_FIRST_APPEARED, 0L)
                     .apply()
                 ScoreHistory(
                     currentScore = newScore,
                     dailyBaselineScore = newScore,
                     dailyBaselineTimestamp = todayMidnight,
-                    lastUpdateTimestamp = now
+                    lastUpdateTimestamp = now,
+                    deltaFirstAppearedTimestamp = 0L
                 )
             }
             isSameDay(savedDailyBaselineTimestamp, now) -> {
                 // Same calendar day — keep baseline, update current score only
+                val baseline = savedDailyBaselineScore ?: newScore
+                val delta = newScore - baseline
+                val deltaFirstAppeared = computeDeltaFirstAppeared(delta, now)
                 prefs.edit()
                     .putInt(KEY_CURRENT_SCORE, newScore)
                     .putLong(KEY_LAST_UPDATE_TIMESTAMP, now)
+                    .putLong(KEY_DELTA_FIRST_APPEARED, deltaFirstAppeared)
                     .apply()
                 ScoreHistory(
                     currentScore = newScore,
-                    dailyBaselineScore = savedDailyBaselineScore,
+                    dailyBaselineScore = baseline,
                     dailyBaselineTimestamp = savedDailyBaselineTimestamp,
-                    lastUpdateTimestamp = now
+                    lastUpdateTimestamp = now,
+                    deltaFirstAppearedTimestamp = deltaFirstAppeared
                 )
             }
             else -> {
                 // New calendar day — yesterday's closing score becomes today's baseline
+                val delta = newScore - savedCurrent
+                val deltaFirstAppeared = computeDeltaFirstAppeared(delta, now)
                 prefs.edit()
                     .putInt(KEY_DAILY_BASELINE_SCORE, savedCurrent)
                     .putInt(KEY_CURRENT_SCORE, newScore)
                     .putLong(KEY_DAILY_BASELINE_TIMESTAMP, todayMidnight)
                     .putLong(KEY_LAST_UPDATE_TIMESTAMP, now)
+                    .putLong(KEY_DELTA_FIRST_APPEARED, deltaFirstAppeared)
                     .apply()
                 ScoreHistory(
                     currentScore = newScore,
                     dailyBaselineScore = savedCurrent,
                     dailyBaselineTimestamp = todayMidnight,
-                    lastUpdateTimestamp = now
+                    lastUpdateTimestamp = now,
+                    deltaFirstAppearedTimestamp = deltaFirstAppeared
                 )
             }
         }
+    }
+
+    /**
+     * Returns the timestamp to persist for [KEY_DELTA_FIRST_APPEARED]:
+     * - Zero delta: reset to 0 (no active change to display).
+     * - Non-zero delta with an existing timestamp: keep it (window started earlier).
+     * - Non-zero delta with no existing timestamp: record [now] as first appearance.
+     */
+    private fun computeDeltaFirstAppeared(delta: Int, now: Long): Long {
+        if (delta == 0) return 0L
+        val existing = savedDeltaFirstAppearedTimestamp
+        return if (existing != 0L) existing else now
     }
 
     private val savedCurrentScore: Int?
@@ -82,12 +105,16 @@ class ScoreHistoryRepository(context: Context) {
     private val savedDailyBaselineTimestamp: Long
         get() = prefs.getLong(KEY_DAILY_BASELINE_TIMESTAMP, 0L)
 
+    private val savedDeltaFirstAppearedTimestamp: Long
+        get() = prefs.getLong(KEY_DELTA_FIRST_APPEARED, 0L)
+
     companion object {
         private const val PREFS_NAME = "score_history"
         private const val KEY_CURRENT_SCORE = "current_score"
         private const val KEY_DAILY_BASELINE_SCORE = "daily_baseline_score"
         private const val KEY_DAILY_BASELINE_TIMESTAMP = "daily_baseline_timestamp"
         private const val KEY_LAST_UPDATE_TIMESTAMP = "last_update_timestamp"
+        private const val KEY_DELTA_FIRST_APPEARED = "delta_first_appeared_timestamp"
 
         /** Returns the Unix timestamp (ms) of midnight at the start of the day containing [ms]. */
         private fun midnightOf(ms: Long): Long = Calendar.getInstance().apply {

@@ -92,7 +92,8 @@ class PrivacyWidgetProvider : AppWidgetProvider() {
                 val scoreDelta = scoreHistory.scoreDelta
                 val showPrivacyChange = scoreDelta != null &&
                         scoreDelta != 0 &&
-                        (System.currentTimeMillis() - scoreHistory.lastUpdateTimestamp) <= CHANGE_EXPIRY_MS
+                        scoreHistory.deltaFirstAppearedTimestamp != 0L &&
+                        (System.currentTimeMillis() - scoreHistory.deltaFirstAppearedTimestamp) <= CHANGE_EXPIRY_MS
 
                 for (appWidgetId in appWidgetIds) {
                     updateWidget(
