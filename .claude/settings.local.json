@@ -25,7 +25,8 @@
       "Bash(./gradlew assembleRelease:*)",
       "Bash(JAVA_HOME=/usr/lib/jvm/java-21-openjdk ./gradlew assembleRelease:*)",
       "Bash(JAVA_HOME=/home/techtrest/.local/share/android-studio/jbr ./gradlew assembleRelease:*)",
-      "Bash(echo exit:$?:*)"
+      "Bash(echo exit:$?:*)",
+      "Bash(./gradlew test:*)"
     ]
   }
 }
