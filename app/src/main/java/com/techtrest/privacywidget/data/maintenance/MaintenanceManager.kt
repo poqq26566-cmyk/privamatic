@@ -159,23 +159,15 @@ class MaintenanceManager(private val context: Context) {
 
     /**
      * Get total points from non-overdue checks.
-     * Reads all check states directly from DataStore rather than via getCheckStates(),
-     * because getCheckStates() applies a UI visibility filter that hides completed
-     * ADVERTISING_ID_CHECK entries — which would incorrectly drop their earned points.
+     * ADVERTISING_ID_CHECK is excluded — its score contribution is now handled
+     * entirely by the ADVERTISING_ID enum pointDeduction via the scan result.
      */
     fun getTotalPoints(): Flow<Int> {
         return context.maintenanceDataStore.data.map { preferences ->
             ManualCheckType.entries
+                .filter { it != ManualCheckType.ADVERTISING_ID_CHECK }
                 .map { type -> calculateCheckState(type, preferences) }
-                .filter {
-                    // ADVERTISING_ID_CHECK is intentionally asymmetric: deleting the Ad ID is
-                    // a permanent action, so points are kept even when the check becomes overdue.
-                    // All other check types are periodic and lose points the moment they are overdue.
-                    if (it.type == ManualCheckType.ADVERTISING_ID_CHECK)
-                        it.lastCompletedTimestamp != 0L
-                    else
-                        !it.isOverdue
-                }
+                .filter { !it.isOverdue }
                 .sumOf { it.type.pointValue }
         }
     }

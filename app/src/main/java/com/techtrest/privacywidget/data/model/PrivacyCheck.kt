@@ -89,7 +89,7 @@ enum class PrivacyCheck(
     ),
     ADVERTISING_ID(
         displayName = "Advertising ID",
-        pointDeduction = 0,
+        pointDeduction = 5,
         description = "Advertising ID enables cross-app tracking by advertisers",
         recommendation = "Disable or reset your Advertising ID in Settings > Privacy > Ads."
     ),

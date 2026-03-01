@@ -6,7 +6,7 @@ import com.techtrest.privacywidget.data.model.PrivacyScore
 object PrivacyScoreCalculator {
 
     private const val MAX_SCORE = 100
-    private const val MAX_MANUAL_CHECK_POINTS = 20
+    private const val MAX_MANUAL_CHECK_POINTS = 15
 
     /**
      * Calculates the privacy score based on detected issues and manual check completion.
@@ -16,7 +16,7 @@ object PrivacyScoreCalculator {
      * The score is floored at 0 and cannot go negative.
      *
      * @param issues List of privacy issues detected by scanners
-     * @param manualCheckPoints Points earned from completed manual checks (0-20)
+     * @param manualCheckPoints Points earned from completed manual checks (0-15)
      * @return Calculated privacy score with all issues and timestamp
      */
     fun calculateScore(issues: List<PrivacyIssue>, manualCheckPoints: Int = 0): PrivacyScore {
@@ -28,7 +28,7 @@ object PrivacyScoreCalculator {
         val manualCheckDeductions = MAX_MANUAL_CHECK_POINTS - manualCheckPoints
 
         // Start with MAX_SCORE (100), subtract both privacy issues and manual check deductions
-        // Fresh install: 100 - 0 - 20 = 80/100 (all checks incomplete)
+        // Fresh install: 100 - 0 - 15 = 85/100 (all checks incomplete)
         // All completed: 100 - 0 - 0 = 100/100 (full points)
         val score = (MAX_SCORE - totalDeductions - manualCheckDeductions).coerceIn(0, MAX_SCORE)
 
