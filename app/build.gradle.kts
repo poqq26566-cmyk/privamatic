@@ -8,6 +8,15 @@ android {
     namespace = "com.techtrest.privamatic"
     compileSdk = 35
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("/home/techtrest/privamatic-release.jks")
+            storePassword = System.getenv("PRIVAMATIC_STORE_PASSWORD")
+            keyAlias = "privamatic"
+            keyPassword = System.getenv("PRIVAMATIC_KEY_PASSWORD")
+        }
+    }
+
     defaultConfig {
         applicationId = "com.techtrest.privamatic"
         minSdk = 26
@@ -26,6 +35,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 
