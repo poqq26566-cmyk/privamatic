@@ -14,6 +14,7 @@ import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
 import com.techtrest.privacywidget.data.ScoreHistoryRepository
+import com.techtrest.privacywidget.data.util.DeviceNameUtil
 import com.techtrest.privacywidget.data.scanner.PrivacyScanner
 import com.techtrest.privacywidget.data.scanner.PrivacyScoreCalculator
 import kotlinx.coroutines.CoroutineScope
@@ -82,7 +83,7 @@ class PrivacyWidgetProvider : AppWidgetProvider() {
                 val privacyScore = scanner.performCompleteScan()
                 val score = privacyScore.score
                 val rating = PrivacyScoreCalculator.getScoreRating(score)
-                val deviceName = Build.MODEL
+                val deviceName = DeviceNameUtil.getMarketingName()
                 val osName = detectOperatingSystem(context)
                 val ratingText = rating.toShortLabel()
 
@@ -110,7 +111,7 @@ class PrivacyWidgetProvider : AppWidgetProvider() {
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Error updating widget", e)
-                val deviceName = Build.MODEL
+                val deviceName = DeviceNameUtil.getMarketingName()
                 val osName = detectOperatingSystem(context)
                 for (appWidgetId in appWidgetIds) {
                     updateWidget(

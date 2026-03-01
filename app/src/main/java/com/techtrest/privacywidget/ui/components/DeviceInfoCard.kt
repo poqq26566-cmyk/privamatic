@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.techtrest.privacywidget.data.model.ScoreHistory
+import com.techtrest.privacywidget.data.util.DeviceNameUtil
 import kotlin.math.abs
 
 @Composable
@@ -50,7 +51,7 @@ fun DeviceInfoCard(
             )
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
-            DeviceInfoRow("Model", Build.MODEL)
+            DeviceInfoRow("Model", DeviceNameUtil.getMarketingName())
             DeviceInfoRow("Operating System", detectOperatingSystem(context))
             DeviceInfoRow("Android Version", Build.VERSION.RELEASE)
 
