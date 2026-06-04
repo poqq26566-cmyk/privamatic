@@ -4,6 +4,8 @@ Whether you're just starting to take privacy seriously or you're already running
 
 45+ automated checks cover system security (screen lock, encryption, USB debugging, biometrics), network privacy (VPN, Private DNS, Wi-Fi scanning), surveillance apps (Google, Meta, Microsoft, TikTok, AI assistants), and default apps (browser, keyboard, launcher, email).
 
+Trusted Apps — whitelist FOSS apps that legitimately use accessibility, notification, or location permissions. Toggle an app as trusted and its score penalty is removed instantly. You decide what you trust.
+
 Quick Wins surface the easiest improvements first — each one includes plain-English instructions and a direct link to the relevant Settings page.
 
 Manual Checks remind you to periodically review location permissions, camera and microphone access, and unused apps — the things that can't be checked automatically.
