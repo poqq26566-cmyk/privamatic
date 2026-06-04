@@ -27,7 +27,16 @@
       "Bash(JAVA_HOME=/home/techtrest/.local/share/android-studio/jbr ./gradlew assembleRelease:*)",
       "Bash(echo exit:$?:*)",
       "Bash(./gradlew test:*)",
-      "Bash(__NEW_LINE_98a37ebc664cc344__:*)"
+      "Bash(__NEW_LINE_98a37ebc664cc344__:*)",
+      "Bash(./gradlew compileReleaseKotlin)",
+      "Bash(./gradlew compileReleaseKotlin --info)",
+      "Read(//usr/lib/jvm/**)",
+      "Bash(java -version)",
+      "Bash(/home/techtresthome/.gradle/jdks/eclipse_adoptium-21-amd64-linux.2/bin/java -version)",
+      "Bash(sudo dnf install -y imagemagick)",
+      "Bash(identify *)",
+      "Bash(JAVA_HOME=/home/techtresthome/.gradle/jdks/eclipse_adoptium-21-amd64-linux.2 cd \"/home/techtresthome/Local App Projects/Privamatic\")",
+      "Bash(JAVA_HOME=/home/techtresthome/.gradle/jdks/eclipse_adoptium-21-amd64-linux.2 ./gradlew assembleRelease)"
     ]
   }
 }

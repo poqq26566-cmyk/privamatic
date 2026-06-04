@@ -1,0 +1,4 @@
+- Trusted Apps — whitelist FOSS apps to remove unfair privacy penalties
+- New app icon and feature graphic
+- VPN + Private DNS scoring fix — no penalty when VPN handles DNS
+- Widget now reflects trusted apps in score
