@@ -7,14 +7,13 @@ import androidx.lifecycle.viewModelScope
 import com.techtrest.privamatic.PrivacyWidgetProvider
 import com.techtrest.privamatic.data.QuickWinsDetector
 import com.techtrest.privamatic.data.ScoreHistoryRepository
+import com.techtrest.privamatic.data.TrustedAppsAdjuster
 import com.techtrest.privamatic.data.TrustedAppsRepository
 import com.techtrest.privamatic.data.model.FlaggedApp
-import com.techtrest.privamatic.data.model.PrivacyIssue
 import com.techtrest.privamatic.data.model.PrivacyScore
 import com.techtrest.privamatic.data.model.QuickWin
 import com.techtrest.privamatic.data.model.ScoreHistory
 import com.techtrest.privamatic.data.scanner.PrivacyScanner
-import com.techtrest.privamatic.data.scanner.PrivacyScoreCalculator
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -86,7 +85,7 @@ class PrivacyViewModel(application: Application) : AndroidViewModel(application)
             trustedPackages.collect { trusted ->
                 val rawScore = _rawPrivacyScore.value ?: return@collect
                 if (_scanState.value is PrivacyScanState.Scanning) return@collect
-                _scanState.value = PrivacyScanState.Success(computeAdjustedScore(rawScore, trusted))
+                _scanState.value = PrivacyScanState.Success(TrustedAppsAdjuster.computeAdjustedScore(rawScore, trusted))
             }
         }
         performScan()
@@ -137,22 +136,9 @@ class PrivacyViewModel(application: Application) : AndroidViewModel(application)
         _rawQuickWins.value = QuickWinsDetector.detectQuickWins(result)
         _flaggedApps.value = computeFlaggedApps(result)
         val trusted = trustedAppsRepository.trustedPackages.first()
-        val adjustedScore = computeAdjustedScore(result, trusted)
+        val adjustedScore = TrustedAppsAdjuster.computeAdjustedScore(result, trusted)
         _scoreHistory.value = scoreHistoryRepository.recordScore(adjustedScore.score)
         _scanState.value = PrivacyScanState.Success(adjustedScore)
-    }
-
-    private fun computeAdjustedScore(rawScore: PrivacyScore, trusted: Set<String>): PrivacyScore {
-        if (trusted.isEmpty()) return rawScore
-        val adjustedIssues = rawScore.issues.map { adjustIssueForTrust(it, trusted) }
-        return PrivacyScoreCalculator.calculateScore(adjustedIssues, rawScore.manualCheckPoints)
-    }
-
-    private fun adjustIssueForTrust(issue: PrivacyIssue, trusted: Set<String>): PrivacyIssue {
-        if (issue.isSecure || issue.flaggedPackages.isEmpty()) return issue
-        val untrustedCount = issue.flaggedPackages.count { it !in trusted }
-        if (untrustedCount == issue.flaggedPackages.size) return issue
-        return issue.copy(customPointDeduction = untrustedCount * issue.check.pointDeduction)
     }
 
     private fun computeFlaggedApps(rawScore: PrivacyScore): List<FlaggedApp> {

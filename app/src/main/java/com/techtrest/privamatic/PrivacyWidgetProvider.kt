@@ -15,12 +15,15 @@ import android.view.View
 import com.techtrest.privamatic.BuildConfig
 import android.widget.RemoteViews
 import com.techtrest.privamatic.data.ScoreHistoryRepository
+import com.techtrest.privamatic.data.TrustedAppsAdjuster
+import com.techtrest.privamatic.data.TrustedAppsRepository
 import com.techtrest.privamatic.data.util.DeviceNameUtil
 import com.techtrest.privamatic.data.scanner.PrivacyScanner
 import com.techtrest.privamatic.data.scanner.PrivacyScoreCalculator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 import androidx.compose.ui.graphics.toArgb
@@ -81,7 +84,9 @@ class PrivacyWidgetProvider : AppWidgetProvider() {
         CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
             try {
                 val scanner = PrivacyScanner(context)
-                val privacyScore = scanner.performCompleteScan()
+                val rawScore = scanner.performCompleteScan()
+                val trusted = TrustedAppsRepository(context).trustedPackages.first()
+                val privacyScore = TrustedAppsAdjuster.computeAdjustedScore(rawScore, trusted)
                 val score = privacyScore.score
                 val rating = PrivacyScoreCalculator.getScoreRating(score)
                 val deviceName = DeviceNameUtil.getMarketingName()
