@@ -54,7 +54,7 @@ class NetworkSecurityChecker(private val context: Context) {
                     "private_dns_mode"
                 )
 
-                when (privateDnsMode) {
+                val rawIssue = when (privateDnsMode) {
                     "hostname" -> {
                         val hostname = Settings.Global.getString(
                             context.contentResolver,
@@ -95,6 +95,18 @@ class NetworkSecurityChecker(private val context: Context) {
                         technicalDetails = if (privateDnsMode == null) "Not configured" else "Unknown mode: $privateDnsMode"
                     )
                 }
+
+                // VPN tunnels DNS through the encrypted connection — don't penalise if VPN is active
+                if (!rawIssue.isSecure && isVpnActive()) {
+                    PrivacyIssue(
+                        check = PrivacyCheck.PRIVATE_DNS,
+                        isSecure = true,
+                        currentStatus = "VPN active — DNS handled by VPN",
+                        technicalDetails = "Private DNS is not configured, but an active VPN handles DNS routing"
+                    )
+                } else {
+                    rawIssue
+                }
             } else {
                 // Private DNS not available before Android 9
                 PrivacyIssue(
@@ -111,6 +123,17 @@ class NetworkSecurityChecker(private val context: Context) {
                 currentStatus = "Unable to determine",
                 technicalDetails = "Error: ${e.message}"
             )
+        }
+    }
+
+    private fun isVpnActive(): Boolean {
+        return try {
+            val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+                ?: return false
+            val capabilities = cm.getNetworkCapabilities(cm.activeNetwork)
+            capabilities?.hasTransport(NetworkCapabilities.TRANSPORT_VPN) == true
+        } catch (_: Exception) {
+            false
         }
     }
 
