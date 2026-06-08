@@ -313,6 +313,7 @@ class DefaultAppsChecker(private val context: Context) {
                 packageName.contains("faircode.email", ignoreCase = true) -> "FairEmail"
                 packageName.contains("protonmail", ignoreCase = true) -> "ProtonMail"
                 packageName.contains("tutanota", ignoreCase = true) -> "Tutanota"
+                packageName.contains("net.thunderbird.android", ignoreCase = true) -> "Thunderbird"
                 packageName.contains("simple.mail", ignoreCase = true) -> "Simple Mail"
                 else -> null
             }
@@ -399,6 +400,7 @@ class DefaultAppsChecker(private val context: Context) {
                 packageName.contains("kiss", ignoreCase = true) && packageName.contains("launcher") -> "KISS Launcher"
                 packageName.contains("niagara", ignoreCase = true) -> "Niagara Launcher"
                 packageName.contains("neolauncher", ignoreCase = true) -> "Neo Launcher"
+                packageName.contains("de.mm20.launcher2", ignoreCase = true) -> "Kvaesitso"
                 packageName.contains("olauncher", ignoreCase = true) -> "Olauncher"
                 packageName.contains("grapheneos", ignoreCase = true) && packageName.contains("launcher") -> "GrapheneOS Launcher"
                 packageName.contains("launcher3", ignoreCase = true) && packageName.contains("android") -> "AOSP Launcher"
