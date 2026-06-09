@@ -41,6 +41,7 @@ class PrivacyScanner(private val context: Context) {
         issues.add(systemServicesChecker.checkAccessibilityServices())
         issues.add(systemServicesChecker.checkDeviceAdminApps())
         issues.add(installedAppsChecker.checkBackgroundLocationApps())
+        issues.add(securityChecker.checkSecurityPatch())
 
         // ===== NETWORK & TRACKING PRIVACY CHECKS =====
         issues.add(networkChecker.checkVpnConnection())

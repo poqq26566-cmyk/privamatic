@@ -4,8 +4,11 @@ import android.app.KeyguardManager
 import android.content.Context
 import android.os.Build
 import androidx.biometric.BiometricManager
+import com.techtrest.privamatic.R
 import com.techtrest.privamatic.data.model.PrivacyCheck
 import com.techtrest.privamatic.data.model.PrivacyIssue
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 class SecuritySettingsChecker(private val context: Context) {
 
@@ -78,6 +81,45 @@ class SecuritySettingsChecker(private val context: Context) {
                 isSecure = true, // Don't penalize on error
                 currentStatus = "Unable to determine",
                 technicalDetails = "Error: ${e.message}"
+            )
+        }
+    }
+
+    fun checkSecurityPatch(): PrivacyIssue {
+        return try {
+            val patchDate = LocalDate.parse(Build.VERSION.SECURITY_PATCH)
+            val today = LocalDate.now()
+            val monthsOld = ChronoUnit.MONTHS.between(patchDate, today).toInt()
+
+            when {
+                monthsOld < 3 -> PrivacyIssue(
+                    check = PrivacyCheck.SECURITY_PATCH,
+                    isSecure = true,
+                    currentStatus = context.getString(R.string.status_security_patch_current)
+                )
+                monthsOld < 6 -> PrivacyIssue(
+                    check = PrivacyCheck.SECURITY_PATCH,
+                    isSecure = true,
+                    currentStatus = context.getString(R.string.fmt_security_patch_ageing, monthsOld)
+                )
+                monthsOld < 12 -> PrivacyIssue(
+                    check = PrivacyCheck.SECURITY_PATCH,
+                    isSecure = false,
+                    currentStatus = context.getString(R.string.fmt_security_patch_outdated, monthsOld),
+                    customPointDeduction = 5
+                )
+                else -> PrivacyIssue(
+                    check = PrivacyCheck.SECURITY_PATCH,
+                    isSecure = false,
+                    currentStatus = context.getString(R.string.fmt_security_patch_critical, monthsOld),
+                    customPointDeduction = 10
+                )
+            }
+        } catch (e: Exception) {
+            PrivacyIssue(
+                check = PrivacyCheck.SECURITY_PATCH,
+                isSecure = true,
+                currentStatus = context.getString(R.string.status_security_patch_unknown)
             )
         }
     }

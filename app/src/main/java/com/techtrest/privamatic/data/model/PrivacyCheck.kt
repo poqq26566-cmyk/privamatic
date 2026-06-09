@@ -76,6 +76,12 @@ enum class PrivacyCheck(
         actionType = ActionType.LOCATION_SETTINGS,
         actionLabel = R.string.privacy_check_background_location_apps_action
     ),
+    SECURITY_PATCH(
+        displayName = R.string.privacy_check_security_patch_name,
+        pointDeduction = 10,
+        description = R.string.privacy_check_security_patch_description,
+        recommendation = R.string.privacy_check_security_patch_recommendation
+    ),
 
     // ===== NETWORK & TRACKING PRIVACY =====
     VPN_CONNECTION(
@@ -98,7 +104,7 @@ enum class PrivacyCheck(
     ),
     WIFI_SCANNING(
         displayName = R.string.privacy_check_wifi_scanning_name,
-        pointDeduction = 1,
+        pointDeduction = 2,
         description = R.string.privacy_check_wifi_scanning_description,
         recommendation = R.string.privacy_check_wifi_scanning_recommendation
     ),

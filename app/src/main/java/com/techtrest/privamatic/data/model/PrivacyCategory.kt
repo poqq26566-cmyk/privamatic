@@ -30,7 +30,8 @@ enum class PrivacyCategory(
             PrivacyCheck.NOTIFICATION_LISTENER,
             PrivacyCheck.ACCESSIBILITY_SERVICE,
             PrivacyCheck.DEVICE_ADMIN,
-            PrivacyCheck.BACKGROUND_LOCATION_APPS
+            PrivacyCheck.BACKGROUND_LOCATION_APPS,
+            PrivacyCheck.SECURITY_PATCH
         )
     ),
     NETWORK_PRIVACY(
