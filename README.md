@@ -109,9 +109,18 @@ app/src/main/java/com/techtrest/privamatic/
 - VPN + Private DNS scoring fix
 - Widget score synced with trusted apps whitelist
 
-**Future**
-- Translations (DE, PL, FR, ES, IT)
-- Deeper app permissions analysis
+**v1.2 (2026)** ✅
+- Security patch date check — flags outdated and end-of-life devices
+- microG correctly detected and not penalised
+- Ad ID check auto-passes on GMS-free devices (GrapheneOS, LineageOS)
+- Wi-Fi scanning explanation updated to reflect real-world retail tracking
+- Privacy-friendly app allowlists updated (Thunderbird, Kvaesitso added; Niagara removed)
+- Full i18n groundwork — all strings extracted to resources
+
+**v1.3 (planned)**
+- Translations: DE, PL, FR, ES, IT
+- "No internet permission" trust badge
+- Network permission awareness (GrapheneOS/LineageOS firewall detection)
 - Score card sharing
 - Full actionable items list
 
