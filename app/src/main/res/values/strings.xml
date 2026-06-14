@@ -833,6 +833,14 @@
     <string name="label_quick_win_instructions">INSTRUCTIONS</string>
 
     <!-- ============================================================ -->
+    <!-- BREAKDOWN SUB-TAB -->
+    <!-- ============================================================ -->
+    <string name="tab_breakdown">Breakdown</string>
+    <string name="label_breakdown_perfect_score">No deductions — perfect score!</string>
+    <string name="fmt_breakdown_deduction">−%d pts</string>
+    <string name="fmt_breakdown_total_deductions">Total deductions: −%d pts</string>
+
+    <!-- ============================================================ -->
     <!-- AD ID VERIFICATION SCREEN -->
     <!-- ============================================================ -->
     <string name="label_adid_screen_title">Advertising ID</string>
@@ -849,6 +857,7 @@
     <string name="label_adid_quiz_answer_2">Disables all ads on your device</string>
     <string name="label_adid_quiz_answer_3">Removes the ID so advertisers can\'t link your activity across apps</string>
     <string name="label_adid_quiz_answer_4">Stops apps from tracking you permanently</string>
+    <string name="ad_id_quiz_hint">Select the correct answer to unlock the next step</string>
 
     <!-- ============================================================ -->
     <!-- DEVICE INFO CARD -->

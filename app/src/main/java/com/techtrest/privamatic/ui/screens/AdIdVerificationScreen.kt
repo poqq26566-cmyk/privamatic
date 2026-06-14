@@ -395,6 +395,13 @@ private fun QuizCard(
                     }
                 }
             }
+
+            Text(
+                text = stringResource(R.string.ad_id_quiz_hint),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 8.dp)
+            )
         }
     }
 }

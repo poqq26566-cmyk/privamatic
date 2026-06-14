@@ -2,6 +2,7 @@ package com.techtrest.privamatic.ui.navigation
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.RemoveRedEye
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.runtime.Composable
@@ -23,6 +24,10 @@ enum class DetailsSubTab(
     SECURITY(
         label = R.string.details_sub_tab_security,
         icon = Icons.Default.Security
+    ),
+    BREAKDOWN(
+        label = R.string.tab_breakdown,
+        icon = Icons.Default.BarChart
     )
 }
 

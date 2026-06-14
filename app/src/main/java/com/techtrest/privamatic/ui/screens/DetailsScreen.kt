@@ -47,6 +47,8 @@ import com.techtrest.privamatic.data.model.FlaggedApp
 import com.techtrest.privamatic.data.model.PrivacyCategory
 import com.techtrest.privamatic.data.model.PrivacyScore
 import com.techtrest.privamatic.ui.components.CategoryGroup
+import androidx.annotation.StringRes
+import com.techtrest.privamatic.ui.navigation.DetailsSubTab
 import com.techtrest.privamatic.ui.navigation.DetailsTab
 
 @Composable
@@ -56,6 +58,8 @@ fun DetailsScreen(
     trustedPackages: Set<String>,
     selectedTab: DetailsTab,
     onTabSelected: (DetailsTab) -> Unit,
+    selectedSubTab: DetailsSubTab,
+    onSubTabSelected: (DetailsSubTab) -> Unit,
     isAppsBannerDismissed: Boolean,
     onDismissAppsBanner: () -> Unit,
     onTrustApp: (String) -> Unit,
@@ -76,7 +80,9 @@ fun DetailsScreen(
         when (selectedTab) {
             DetailsTab.CHECKS -> ChecksContent(
                 privacyScore = privacyScore,
-                trustedPackages = trustedPackages
+                trustedPackages = trustedPackages,
+                selectedSubTab = selectedSubTab,
+                onSubTabSelected = onSubTabSelected
             )
             DetailsTab.APPS -> AppsContent(
                 flaggedApps = flaggedApps,
@@ -94,10 +100,11 @@ fun DetailsScreen(
 private fun ChecksContent(
     privacyScore: PrivacyScore,
     trustedPackages: Set<String>,
+    selectedSubTab: DetailsSubTab,
+    onSubTabSelected: (DetailsSubTab) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val securityCategories = listOf(PrivacyCategory.SYSTEM_SECURITY)
-
     val surveillanceCategories = listOf(
         PrivacyCategory.NETWORK_PRIVACY,
         PrivacyCategory.GOOGLE_SERVICES,
@@ -108,6 +115,48 @@ private fun ChecksContent(
         PrivacyCategory.AI_AND_OTHER_APPS
     )
 
+    Column(modifier = modifier.fillMaxSize()) {
+        TabRow(selectedTabIndex = selectedSubTab.ordinal) {
+            DetailsSubTab.entries.forEach { subTab ->
+                Tab(
+                    selected = selectedSubTab == subTab,
+                    onClick = { onSubTabSelected(subTab) },
+                    text = { Text(stringResource(subTab.label)) },
+                    icon = { Icon(imageVector = subTab.icon, contentDescription = null) }
+                )
+            }
+        }
+        when (selectedSubTab) {
+            DetailsSubTab.SECURITY -> CategoryListContent(
+                headerRes = R.string.details_section_security,
+                categories = securityCategories,
+                privacyScore = privacyScore,
+                trustedPackages = trustedPackages,
+                modifier = Modifier.weight(1f)
+            )
+            DetailsSubTab.SURVEILLANCE -> CategoryListContent(
+                headerRes = R.string.details_section_surveillance,
+                categories = surveillanceCategories,
+                privacyScore = privacyScore,
+                trustedPackages = trustedPackages,
+                modifier = Modifier.weight(1f)
+            )
+            DetailsSubTab.BREAKDOWN -> BreakdownTab(
+                privacyScore = privacyScore,
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
+
+@Composable
+private fun CategoryListContent(
+    @StringRes headerRes: Int,
+    categories: List<PrivacyCategory>,
+    privacyScore: PrivacyScore,
+    trustedPackages: Set<String>,
+    modifier: Modifier = Modifier
+) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 16.dp),
@@ -115,31 +164,13 @@ private fun ChecksContent(
     ) {
         item {
             Text(
-                text = stringResource(R.string.details_section_security),
+                text = stringResource(headerRes),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(start = 4.dp)
             )
         }
-
-        items(securityCategories, key = { it.name }) { category ->
-            CategoryGroup(
-                category = category,
-                privacyScore = privacyScore,
-                trustedPackages = trustedPackages
-            )
-        }
-
-        item {
-            Text(
-                text = stringResource(R.string.details_section_surveillance),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(start = 4.dp, top = 8.dp)
-            )
-        }
-
-        items(surveillanceCategories, key = { it.name }) { category ->
+        items(categories, key = { it.name }) { category ->
             CategoryGroup(
                 category = category,
                 privacyScore = privacyScore,
