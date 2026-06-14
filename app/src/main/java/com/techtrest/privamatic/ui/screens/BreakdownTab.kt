@@ -31,7 +31,9 @@ fun BreakdownTab(
     modifier: Modifier = Modifier
 ) {
     val sortedIssues = remember(privacyScore) {
-        privacyScore.insecureIssues.sortedByDescending { it.pointDeduction }
+        privacyScore.issues
+            .filter { it.pointDeduction > 0 }
+            .sortedByDescending { it.pointDeduction }
     }
     val totalDeductions = remember(privacyScore) {
         privacyScore.totalDeductions
