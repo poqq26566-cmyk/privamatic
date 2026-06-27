@@ -1,413 +1,154 @@
-# Privamatic - Development Conventions
+# Privamatic — Development Conventions
 
-## Design Standards
+## Project Identity
+- **Package**: `com.techtrest.privamatic` (NOT `com.techtrest.privacywidget` — grep before prompting)
+- **Source root**: `app/src/main/java/com/techtrest/privamatic/`
+- **Project path**: `~/Local App Projects/Privamatic` — always quote in shell commands (spaces)
+- **Build command**: `JAVA_HOME=/opt/android-studio/jbr ./gradlew compileDebugKotlin`
+  — system JDK 25 breaks Kotlin parser; never omit JAVA_HOME prefix
+- **Default branch**: `master` (not `main`)
 
-### Typography
-- Use MaterialTheme.typography ONLY
-- Never use arbitrary fontSize
-- Styles: displayLarge, headlineMedium, titleLarge, bodyMedium, labelSmall
-- No custom Text styles unless absolutely necessary
+## File Structure
+app/src/main/java/com/techtrest/privamatic/
 
-### Icons
-- Material Icons ONLY (Icons.Default.*)
-- NO emoji in production UI
-- Icons should be semantic (e.g., Icons.Default.Security for security)
-- Use contentDescription for accessibility
-
-### Colors
-- MaterialTheme.colorScheme ONLY
-- Primary: British Racing Green (#0B4619)
-- Never hardcode colors (#RRGGBB)
-- Use semantic color names (primary, surface, error, etc.)
-
-### Spacing
-- Material Design spacing scale: 4dp, 8dp, 12dp, 16dp, 24dp, 32dp
-- Use Arrangement.spacedBy() for consistent gaps
-- Padding in multiples of 4dp
-- Never use arbitrary values (e.g., 13dp, 27dp)
-
-### Components
-- Material 3 components ONLY
-- No custom clickable boxes - use Card, Button, etc.
-- Proper elevation (2dp for cards, 4dp for interactive)
-- Corner radius: 8dp (small), 12dp (standard)
-
-## Code Style
-
-### Naming Conventions
-**Files:**
-- Screens: `XxxScreen.kt` (e.g., DashboardScreen.kt)
-- Components: `XxxComponent.kt` or in components/ folder
-- Models: `Xxx.kt` (e.g., PrivacyScore.kt)
-- Utilities: `XxxUtil.kt` or as object singletons
-
-**Kotlin:**
-- Classes: PascalCase (e.g., `PrivacyScoreCalculator`)
-- Functions: camelCase (e.g., `calculateScore`)
-- Composables: PascalCase (e.g., `DashboardScreen`)
-- Properties: camelCase (e.g., `isRefreshing`)
-- Constants: UPPER_SNAKE_CASE (e.g., `MAX_SCORE`)
-- Private functions: prefix with `private`
-- Extension functions: camelCase (e.g., `List<T>.countSecure()`)
-
-### File Organization
-```
-app/src/main/java/com/techtrest/privacywidget/
 ├── data/
-│   ├── model/          # Data classes
-│   ├── scanner/        # Detection logic
+
+│   ├── model/              # Data classes (PrivacyScore, PrivacyIssue, PrivacyCheck)
+
+│   ├── scanner/
+
+│   │   └── checks/         # Individual checker classes
+
+│   ├── util/               # PackageManagerUtil and shared helpers
+
 │   └── QuickWinsDetector.kt
+
 ├── ui/
-│   ├── components/     # Reusable UI components
-│   ├── screens/        # Full screen composables
-│   ├── navigation/     # Navigation logic
-│   └── theme/          # Theme definition
+
+│   ├── components/
+
+│   ├── screens/
+
+│   ├── navigation/         # AppNavigationState
+
+│   └── theme/
+
 └── MainActivity.kt
-```
 
-### Compose Patterns
+## Architecture Rules
 
-**Modifier Usage:**
-```kotlin
-// ✅ CORRECT: Modifier always last parameter, chained properly
-@Composable
-fun MyComponent(
-    title: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier  // Last parameter, default value
-) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    )
-}
+**No DI framework** — no Hilt. Shared components are object singletons passed explicitly:
+- `TrustedAppsAdjuster` — singleton shared between `PrivacyViewModel` and `PrivacyWidgetProvider`
+- `QuickWinsDetector` — singleton
+- Never instantiate these per-caller — widget and ViewModel must produce identical scores
 
-// ❌ WRONG: Modifier not last, no default
-@Composable
-fun MyComponent(
-    modifier: Modifier,
-    title: String
-)
-```
+**Widget runs independently** — `PrivacyWidgetProvider` runs its own `PrivacyScanner` scan.
+It has no access to ViewModel StateFlow. The scan → TrustedAppsRepository → TrustedAppsAdjuster
+sequence must mirror ViewModel logic exactly.
 
-**State Management:**
-```kotlin
-// ✅ CORRECT: Stateless, hoisted state
-@Composable
-fun Counter(
-    count: Int,
-    onIncrement: () -> Unit,
-    modifier: Modifier = Modifier
-)
+**`getTotalPoints()` rule** — must read directly from DataStore, never delegate to a flow
+that applies UI visibility filters. Visibility filters silently drop completed-but-not-overdue
+items, losing those points.
 
-// ❌ WRONG: Stateful composable
-@Composable
-fun Counter() {
-    var count by remember { mutableStateOf(0) }
-}
-```
+**Shared utilities** — package helpers (`getAppName`, `isSystemApp`) belong in
+`data/util/PackageManagerUtil.kt`. Never duplicate across Checker files.
+`isSystemApp` must default to `true` on errors (conservative for security).
 
-**Remember with Dependencies:**
-```kotlin
-// ✅ CORRECT: Remember with key
-val quickWins = remember(privacyScore) {
-    QuickWinsDetector.detectQuickWins(privacyScore)
-}
+**`PrivacyCheck` enum is single source of truth** — all scoring logic lives in the enum.
+ViewModel and widget both derive from the same enum values. No dead code drift.
 
-// ❌ WRONG: Remember without dependency
-val quickWins = remember {
-    QuickWinsDetector.detectQuickWins(privacyScore)
-}
-```
+**Score Breakdown tab** — outer Details-level tab (peer to Checks and Apps), not a sub-tab.
+Filter: `pointDeduction > 0`. Sorted descending by deduction.
 
-**No Logic in Composables:**
-```kotlin
-// ✅ CORRECT: Delegate to calculator
-val score = remember(issues) {
-    PrivacyScoreCalculator.calculateScore(issues)
-}
-
-// ❌ WRONG: Logic in composable
-val score = issues.filter { !it.isSecure }.sumOf { it.points }
-```
-
-### Kotlin Best Practices
-
-**Immutability:**
-```kotlin
-// ✅ CORRECT: Prefer val
-val items = listOf(1, 2, 3)
-val score = calculateScore()
-
-// ❌ WRONG: Unnecessary var
-var items = listOf(1, 2, 3)  // Never reassigned
-```
-
-**When Expressions:**
-```kotlin
-// ✅ CORRECT: When expression
-val rating = when {
-    score >= 85 -> ScoreRating.EXCELLENT
-    score >= 70 -> ScoreRating.GOOD
-    else -> ScoreRating.FAIR
-}
-
-// ❌ WRONG: If-else chain
-val rating = if (score >= 85) {
-    ScoreRating.EXCELLENT
-} else if (score >= 70) {
-    ScoreRating.GOOD
-} else {
-    ScoreRating.FAIR
-}
-```
-
-**Extension Functions:**
-```kotlin
-// ✅ CORRECT: Type-specific logic as extension
-fun PrivacyScore.getSecurityIssuesCount() =
-    issues.count { it.check in PrivacyCategory.SYSTEM_SECURITY.checks && !it.isSecure }
-
-// Usage
-val count = privacyScore.getSecurityIssuesCount()
-
-// ❌ WRONG: Utility function with parameter
-fun getSecurityIssuesCount(score: PrivacyScore) = 
-    score.issues.count { ... }
-```
-
-**Data Classes:**
-```kotlin
-// ✅ CORRECT: Immutable data class
-data class PrivacyScore(
-    val score: Int,
-    val maxScore: Int,
-    val issues: List<PrivacyIssue>,
-    val scanTimestamp: Long
-)
-
-// ❌ WRONG: Mutable properties
-data class PrivacyScore(
-    var score: Int,
-    var issues: List<PrivacyIssue>
-)
-```
+**`effectivelySecure`** — `issue.isSecure || allPackagesTrusted` — pure UI derivation,
+no data model changes. Category header counts use the same logic.
 
 ## Strings & Localisation
 
-### Rule: No Hardcoded Strings
-ALL user-facing strings must be defined in `app/src/main/res/values/strings.xml` first.
-Never hardcode English text directly in Kotlin or XML layout files.
+All user-facing strings in `strings.xml`. Never hardcode English text in Kotlin or XML.
 
-**DON'T:**
-```kotlin
-Text("Privacy Score")
-contentDescription = "Secure"
-val status = "Review needed"
-```
+**Enum strings** — use `@StringRes Int` fields, never raw string literals.
+In Composables: `stringResource(rating.displayNameRes)`
+In non-Composable (widget, checker): `context.getString(rating.displayNameRes)`
 
-**DO:**
-```kotlin
-Text(stringResource(R.string.label_score_card_title))
-contentDescription = stringResource(R.string.label_issue_status_secure)
-val status = context.getString(R.string.label_manual_check_review_needed)
-```
+**Widget strings** — `RemoteViews` cannot use `stringResource()`. Always use
+`context.getString()` in `PrivacyWidgetProvider`.
 
-### Naming Convention
+**Naming convention:**
 - UI labels: `label_<screen>_<element>`
-- UI copy (longer text): `copy_<screen>_<element>`
+- UI copy: `copy_<screen>_<element>`
 - Enum display names: `<enum>_<entry>_name`
-- Enum descriptions/recommendations: `<enum>_<entry>_description` / `_recommendation`
 - Plurals: `plural_<element>` using `<plurals>` tag
-- Format strings: `fmt_<element>` using `%d`, `%s`, `%1$d/%2$d`
+- Format strings: `fmt_<element>`
 
-### In Composables
-Use `stringResource()` and `pluralStringResource()` — never raw string literals.
+**Do NOT extract to strings.xml:** package names, log tags, DataStore keys,
+OS brand detection strings (GrapheneOS, CalyxOS), format placeholders.
 
-### In non-Composable code
-Pass `Context` and use `context.getString()` or `context.resources.getQuantityString()`.
+## Security & Privacy Rules
 
-### Exceptions (do NOT extract)
-- Package names (e.g. `com.google.android.gms`)
-- Log tags
-- Settings keys / DataStore keys
-- OS brand name detection strings (GrapheneOS, CalyxOS, etc.) — proper nouns
-- Format placeholders inside strings.xml itself
+**Zero network permissions** — no library that makes network calls may be added.
 
-## Architecture Patterns
+**No third-party SDKs** — no Firebase, Crashlytics, analytics. Ever.
 
-### Separation of Concerns
-- **UI Layer**: Composables (ui/screens, ui/components)
-- **Business Logic**: Calculator/Detector objects (data/scanner)
-- **Data Models**: Immutable data classes (data/model)
-- **Navigation**: Centralized state (ui/navigation)
+**No GMS dependency** — removed pre-F-Droid. Never re-add `com.google.android.gms`.
 
-### State Management
-- Composables are stateless
-- State hoisted to parent or shared state object
-- Use `remember` for derived/computed state
-- Use `rememberSaveable` for state that survives config changes
+**Debug logging** — all `Log.*` calls wrapped in `if (BuildConfig.DEBUG)`.
+Sensitive data (package names, device fingerprints) never in logs, even debug.
 
-### Data Flow
-```
-User Action → Event Handler → State Update → Recomposition
-```
+**Android Auto Backup exclusions** — exclude from cloud backup:
+- `ad_id_prefs` (SharedPreferences)
+- `maintenance_prefs` (DataStore)
+Declared in both `data_extraction_rules.xml` and `backup_rules.xml`.
 
-Example:
-```kotlin
-// State holder
-val navigationState = remember { AppNavigationState() }
+**GMS detection pattern** — use `MATCH_SYSTEM_ONLY` to distinguish stock GMS
+from sandboxed Play on GrapheneOS.
+microG detection requires all three companion packages:
+- `org.microg.gms.self` (most reliable)
+- `org.microg.gms.droidguard` (optional SafetyNet)
+- `org.microg.nlp` (older builds)
+Checking a single package is insufficient.
 
-// Event handler
-onClick = { navigationState.selectTab(NavigationTab.DETAILS) }
+## Build & Release Rules
 
-// UI reacts to state
-when (navigationState.selectedTab) { ... }
-```
+**F-Droid requirements:**
+- `signingConfig = null` in release build type — remove entire `signingConfigs` block
+- Never use `jvmToolchain` — use `kotlinOptions { jvmTarget = "11" }`
+- Never add `foojay-resolver-convention` or `gradle-daemon-jvm.properties`
+- `isMinifyEnabled = true` and `isShrinkResources = true` on release builds
+- All response/model DTOs explicitly listed in `proguard-rules.pro`
+  (R8 silently breaks Gson/Retrofit in release; symptoms never appear in debug)
+- Test `JAVA_HOME=/opt/android-studio/jbr ./gradlew assembleRelease` before every tag
 
-## Anti-Patterns to Avoid
+**Versioning:**
+- Always bump `versionCode` before tagging — F-Droid uses versionCode to detect releases
+- A tag without a versionCode bump is silently skipped by F-Droid
+- Never tag before bumping versionCode
 
-### ❌ Duplicated Logic
-**DON'T:**
-```kotlin
-val count1 = issues.count { it.check in securityChecks && !it.isSecure }
-// ... 50 lines later
-val count2 = issues.count { it.check in trackingChecks && !it.isSecure }
-```
+**Keystore:**
+- Release keystore at `~/privamatic-release.jks`
+- Passwords via env vars `PRIVAMATIC_STORE_PASSWORD` / `PRIVAMATIC_KEY_PASSWORD`
 
-**DO:**
-```kotlin
-fun List<PrivacyIssue>.countByCategory(category: PrivacyCategory) =
-    count { it.check in category.checks && !it.isSecure }
+**Git discipline:**
+- Feature branches always — never commit directly to `master`
+- `git diff → git status → git add → git commit` — always in this order
+- Prefixes: `feat:` / `fix:` / `chore:` / `release:`
+- Never commit `.env`, secrets, or the release keystore
+- Default branch is `master` — push to `git push origin master`
 
-val securityCount = issues.countByCategory(PrivacyCategory.SYSTEM_SECURITY)
-val trackingCount = issues.countByCategory(PrivacyCategory.NETWORK_PRIVACY)
-```
+**F-Droid fastlane metadata:**
+fastlane/metadata/android/en-US/
 
-### ❌ Magic Strings and Numbers
-**DON'T:**
-```kotlin
-if (score >= 85) return "Excellent Privacy"
-val padding = 23.dp
-```
+├── changelogs/<versionCode>.txt   # e.g. 3.txt for versionCode 3
 
-**DO:**
-```kotlin
-private const val EXCELLENT_THRESHOLD = 85
-private val CARD_PADDING = 24.dp  // Material Design scale
+└── images/phoneScreenshots/       # exact name — wrong = silent failure
+Locale folder: `en-US` (hyphen not underscore).
 
-if (score >= EXCELLENT_THRESHOLD) return ScoreRating.EXCELLENT.displayName
-```
+## Design Constraints
+- `MaterialTheme.typography` only — no arbitrary `fontSize`
+- `MaterialTheme.colorScheme` only — no hardcoded hex colors
+- Widget ARGB colors as named constants, never inline hex
+- Material Design spacing: 4dp, 8dp, 12dp, 16dp, 24dp, 32dp — no arbitrary values
+- Corner radius: 8dp small, 12dp standard
+- `Icons.Default.*` only — no emoji in production UI
 
-### ❌ Hardcoded UI Text
-**DON'T:**
-```kotlin
-Text("Excellent Privacy")
-```
-
-**DO:**
-```kotlin
-// Use enum/sealed class
-enum class ScoreRating(val displayName: String) {
-    EXCELLENT("Excellent Privacy")
-}
-
-Text(rating.displayName)
-```
-
-### ❌ Business Logic in Composables
-**DON'T:**
-```kotlin
-@Composable
-fun ScoreDisplay(issues: List<PrivacyIssue>) {
-    val score = 100 - issues.filter { !it.isSecure }.sumOf { it.points }
-    Text("$score")
-}
-```
-
-**DO:**
-```kotlin
-@Composable
-fun ScoreDisplay(privacyScore: PrivacyScore) {
-    Text("${privacyScore.score}")
-}
-
-// Business logic in calculator
-object PrivacyScoreCalculator {
-    fun calculateScore(issues: List<PrivacyIssue>): PrivacyScore { ... }
-}
-```
-
-### ❌ Nullable Types Without Reason
-**DON'T:**
-```kotlin
-data class PrivacyScore(
-    val score: Int?,  // Why nullable?
-    val issues: List<PrivacyIssue>?
-)
-```
-
-**DO:**
-```kotlin
-data class PrivacyScore(
-    val score: Int,
-    val issues: List<PrivacyIssue>  // Empty list if none
-)
-```
-
-## Code Quality Checklist
-
-Before committing code, verify:
-
-**Style:**
-- [ ] All naming follows conventions (PascalCase/camelCase/UPPER_SNAKE_CASE)
-- [ ] Files organized in correct directories
-- [ ] No arbitrary fontSize/spacing/colors
-- [ ] Material 3 components used
-
-**Kotlin:**
-- [ ] Prefer `val` over `var`
-- [ ] Use `when` over if-else chains
-- [ ] Data classes are immutable
-- [ ] Extension functions for type-specific logic
-
-**Compose:**
-- [ ] Modifier last parameter with default
-- [ ] Composables are stateless
-- [ ] `remember` has dependencies listed
-- [ ] No business logic in Composables
-
-**Quality:**
-- [ ] No duplicated logic
-- [ ] No magic strings/numbers
-- [ ] No hardcoded colors
-- [ ] Proper error handling
-
-**Performance:**
-- [ ] Heavy operations memoized with `remember`
-- [ ] No unnecessary recompositions
-- [ ] Expensive lists use LazyColumn
-
-## Philosophy
-
-**Clean:** Minimal, professional, no bloat
-**Consistent:** Follow patterns everywhere
-**Accessible:** Proper contentDescription, semantic colors
-**Maintainable:** DRY principle, clear naming, separation of concerns
-**Privacy-First:** Minimal permissions, transparent limitations
-
-## Resources
-
-- [Material 3 Design](https://m3.material.io/)
-- [Compose Guidelines](https://developer.android.com/jetpack/compose/guidelines)
-- [Kotlin Style Guide](https://kotlinlang.org/docs/coding-conventions.html)
-
----
-
-*Last Updated: 2026-06-08*
-*When updating conventions, increment date and summarize changes*
-```
-
----
-
+*Last updated: 2026-06-18*
