@@ -15,6 +15,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,6 +27,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -50,6 +52,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun SettingsScreen(
     onBackClick: () -> Unit,
+    onClearHistory: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -60,6 +63,7 @@ fun SettingsScreen(
         .getCheckState(ManualCheckType.ADVERTISING_ID_CHECK)
         .collectAsState(initial = null)
     var forceShowAdId by remember { mutableStateOf(onboardingPrefs.isForceShowAdIdCheck()) }
+    var showClearHistoryConfirm by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val completeAdIdFirstMsg = stringResource(R.string.label_settings_complete_adid_first)
@@ -177,6 +181,59 @@ fun SettingsScreen(
                     )
                 }
             }
+
+            // Clear score history
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                shape = MaterialTheme.shapes.medium
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { showClearHistoryConfirm = true }
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = stringResource(R.string.label_history_clear),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = stringResource(R.string.label_history_clear_confirm),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
         }
+    }
+
+    if (showClearHistoryConfirm) {
+        AlertDialog(
+            onDismissRequest = { showClearHistoryConfirm = false },
+            title = { Text(stringResource(R.string.label_history_clear)) },
+            text = { Text(stringResource(R.string.label_history_clear_confirm)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    onClearHistory()
+                    showClearHistoryConfirm = false
+                }) {
+                    Text(
+                        text = stringResource(R.string.label_history_clear),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showClearHistoryConfirm = false }) {
+                    Text(stringResource(R.string.label_common_cancel))
+                }
+            }
+        )
     }
 }

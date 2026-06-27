@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -77,6 +78,11 @@ dependencies {
 
     // DataStore for preferences persistence
     implementation("androidx.datastore:datastore-preferences:1.1.1")
+
+    // Room database
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
 
     // Legacy Android UI (can be removed if fully migrating to Compose)
     implementation(libs.androidx.appcompat)

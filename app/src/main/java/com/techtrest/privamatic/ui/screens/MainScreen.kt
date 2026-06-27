@@ -48,6 +48,7 @@ import com.techtrest.privamatic.data.PrivacyTipSelector
 import com.techtrest.privamatic.data.maintenance.MaintenanceManager
 import com.techtrest.privamatic.data.maintenance.PrivacyTipHistory
 import com.techtrest.privamatic.data.maintenance.QuickWinDismissalManager
+import com.techtrest.privamatic.data.HistoryFilter
 import com.techtrest.privamatic.data.model.PrivacyTip
 import com.techtrest.privamatic.data.model.ManualCheckType
 import com.techtrest.privamatic.data.model.QuickWinType
@@ -73,6 +74,8 @@ fun MainScreen(viewModel: PrivacyViewModel = viewModel()) {
     val tipHistory = remember { PrivacyTipHistory(context) }
     val scanState by viewModel.scanState.collectAsState()
     val scoreHistory by viewModel.scoreHistory.collectAsState()
+    val historySnapshots by viewModel.historySnapshots.collectAsState()
+    val selectedHistoryFilter by viewModel.selectedFilter.collectAsState()
     val trustedPackages by viewModel.trustedPackages.collectAsState()
     val isAppsBannerDismissed by viewModel.isAppsBannerDismissed.collectAsState()
     val flaggedApps by viewModel.flaggedApps.collectAsState()
@@ -133,6 +136,10 @@ fun MainScreen(viewModel: PrivacyViewModel = viewModel()) {
         showAdIdVerification = false
     }
 
+    BackHandler(enabled = navigationState.showHistoryScreen) {
+        navigationState.closeHistory()
+    }
+
     BackHandler(enabled = showScoringSystemScreen) {
         showScoringSystemScreen = false
     }
@@ -159,21 +166,19 @@ fun MainScreen(viewModel: PrivacyViewModel = viewModel()) {
         drawerState = drawerState,
         onScoringSystemClick = {
             showScoringSystemScreen = true
-            scope.launch {
-                drawerState.close()
-            }
+            scope.launch { drawerState.close() }
+        },
+        onHistoryClick = {
+            navigationState.openHistory()
+            scope.launch { drawerState.close() }
         },
         onSettingsClick = {
             showSettingsScreen = true
-            scope.launch {
-                drawerState.close()
-            }
+            scope.launch { drawerState.close() }
         },
         onAboutClick = {
             showAboutDialog = true
-            scope.launch {
-                drawerState.close()
-            }
+            scope.launch { drawerState.close() }
         }
     ) {
         Scaffold(
@@ -385,10 +390,22 @@ fun MainScreen(viewModel: PrivacyViewModel = viewModel()) {
         )
     }
 
+    // History Screen
+    if (navigationState.showHistoryScreen) {
+        HistoryScreen(
+            snapshots = historySnapshots,
+            selectedFilter = selectedHistoryFilter,
+            onFilterChanged = { viewModel.setHistoryFilter(it) },
+            onClearHistory = { viewModel.clearHistory() },
+            onBackClick = { navigationState.closeHistory() }
+        )
+    }
+
     // Settings Screen
     if (showSettingsScreen) {
         SettingsScreen(
-            onBackClick = { showSettingsScreen = false }
+            onBackClick = { showSettingsScreen = false },
+            onClearHistory = { viewModel.clearHistory() }
         )
     }
 

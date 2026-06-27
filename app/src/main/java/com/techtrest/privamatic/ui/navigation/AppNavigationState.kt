@@ -27,6 +27,9 @@ class AppNavigationState(
     var isDrawerOpen by mutableStateOf(false)
         private set
 
+    var showHistoryScreen by mutableStateOf(false)
+        private set
+
     fun selectTab(tab: NavigationTab) {
         selectedTab = tab
     }
@@ -41,6 +44,14 @@ class AppNavigationState(
 
     fun closeDrawer() {
         isDrawerOpen = false
+    }
+
+    fun openHistory() {
+        showHistoryScreen = true
+    }
+
+    fun closeHistory() {
+        showHistoryScreen = false
     }
 }
 

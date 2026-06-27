@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Dashboard
+import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Shield
@@ -39,6 +40,7 @@ import com.techtrest.privamatic.R
 fun PrivacyNavigationDrawer(
     drawerState: DrawerState,
     onScoringSystemClick: () -> Unit,
+    onHistoryClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onAboutClick: () -> Unit,
     content: @Composable () -> Unit
@@ -67,6 +69,22 @@ fun PrivacyNavigationDrawer(
                     },
                     selected = false,
                     onClick = onScoringSystemClick,
+                    modifier = Modifier.padding(horizontal = 12.dp)
+                )
+
+                // History
+                NavigationDrawerItem(
+                    label = {
+                        Text(text = stringResource(R.string.label_drawer_history))
+                    },
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.History,
+                            contentDescription = null
+                        )
+                    },
+                    selected = false,
+                    onClick = onHistoryClick,
                     modifier = Modifier.padding(horizontal = 12.dp)
                 )
 

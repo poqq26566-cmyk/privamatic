@@ -4,12 +4,16 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.techtrest.privamatic.PrivacyWidgetProvider
+import com.techtrest.privamatic.data.HistoryFilter
+import com.techtrest.privamatic.data.PrivacySnapshotRepository
 import com.techtrest.privamatic.data.QuickWinsDetector
 import com.techtrest.privamatic.data.ScoreHistoryRepository
 import com.techtrest.privamatic.data.TrustedAppsAdjuster
 import com.techtrest.privamatic.data.TrustedAppsRepository
+import com.techtrest.privamatic.data.model.CheckDeduction
 import com.techtrest.privamatic.data.model.FlaggedApp
 import com.techtrest.privamatic.data.model.PrivacyScore
+import com.techtrest.privamatic.data.model.PrivacySnapshot
 import com.techtrest.privamatic.data.model.QuickWin
 import com.techtrest.privamatic.data.model.ScoreHistory
 import com.techtrest.privamatic.data.model.isFullyTrusted
@@ -39,6 +43,7 @@ class PrivacyViewModel(application: Application) : AndroidViewModel(application)
 
     private val privacyScanner = PrivacyScanner(application)
     private val scoreHistoryRepository = ScoreHistoryRepository(application)
+    private val snapshotRepository = PrivacySnapshotRepository(application)
     private val trustedAppsRepository = TrustedAppsRepository(application)
 
     private val _scanState = MutableStateFlow<PrivacyScanState>(PrivacyScanState.Idle)
@@ -74,6 +79,12 @@ class PrivacyViewModel(application: Application) : AndroidViewModel(application)
 
     private val _flaggedApps = MutableStateFlow<List<FlaggedApp>>(emptyList())
     val flaggedApps: StateFlow<List<FlaggedApp>> = _flaggedApps.asStateFlow()
+
+    private val _selectedFilter = MutableStateFlow(HistoryFilter.MONTH)
+    val selectedFilter: StateFlow<HistoryFilter> = _selectedFilter.asStateFlow()
+
+    private val _historySnapshots = MutableStateFlow<List<PrivacySnapshot>>(emptyList())
+    val historySnapshots: StateFlow<List<PrivacySnapshot>> = _historySnapshots.asStateFlow()
 
     private var currentScanJob: Job? = null
     private var isInitialLoad = true
@@ -130,6 +141,20 @@ class PrivacyViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch { trustedAppsRepository.dismissAppsBanner() }
     }
 
+    fun setHistoryFilter(filter: HistoryFilter) {
+        _selectedFilter.value = filter
+        viewModelScope.launch {
+            _historySnapshots.value = snapshotRepository.getSnapshots(filter)
+        }
+    }
+
+    fun clearHistory() {
+        viewModelScope.launch {
+            snapshotRepository.clearAll()
+            _historySnapshots.value = emptyList()
+        }
+    }
+
     private suspend fun onScanSuccess(result: PrivacyScore) {
         _rawPrivacyScore.value = result
         _rawQuickWins.value = QuickWinsDetector.detectQuickWins(result, getApplication())
@@ -137,6 +162,11 @@ class PrivacyViewModel(application: Application) : AndroidViewModel(application)
         val trusted = trustedAppsRepository.trustedPackages.first()
         val adjustedScore = TrustedAppsAdjuster.computeAdjustedScore(result, trusted)
         _scoreHistory.value = scoreHistoryRepository.recordScore(adjustedScore.score)
+        val deductions = adjustedScore.issues
+            .filter { it.pointDeduction > 0 }
+            .map { CheckDeduction(checkName = it.check.name, points = it.pointDeduction) }
+        snapshotRepository.recordSnapshot(adjustedScore.score, deductions)
+        _historySnapshots.value = snapshotRepository.getSnapshots(_selectedFilter.value)
         _scanState.value = PrivacyScanState.Success(adjustedScore)
     }
 

@@ -43,7 +43,9 @@
       "Bash(JAVA_OPTS=\"-Djava.version=17\" ./gradlew :app:compileDebugKotlin)",
       "Bash(GRADLE_OPTS=\"-Djdk.version=17\" ./gradlew :app:compileDebugKotlin)",
       "Bash(/opt/android-studio/jbr/bin/java -version)",
-      "Bash(JAVA_HOME=/opt/android-studio/jbr ./gradlew :app:compileDebugKotlin)"
+      "Bash(JAVA_HOME=/opt/android-studio/jbr ./gradlew :app:compileDebugKotlin)",
+      "Bash(JAVA_HOME=/opt/android-studio/jbr ./gradlew compileDebugKotlin)",
+      "Bash(JAVA_HOME=/home/techtrest/.local/share/android-studio/jbr ./gradlew compileDebugKotlin)"
     ]
   }
 }
