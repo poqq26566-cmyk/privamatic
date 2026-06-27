@@ -169,7 +169,11 @@ fun IssueItem(
                             )
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
-                                text = stringResource(issue.recommendation),
+                                text = if (effectivelySecure && issue.check == PrivacyCheck.BIOMETRIC_AUTH) {
+                                    stringResource(R.string.privacy_check_biometric_auth_passing_note)
+                                } else {
+                                    stringResource(issue.recommendation)
+                                },
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
