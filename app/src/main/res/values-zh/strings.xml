@@ -1,1 +1,296 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
 
+    <!-- ============================================================ -->
+    <!-- EXISTING ENTRIES -->
+    <!-- ============================================================ -->
+    <string name="app_name">Privamatic</string>
+    <string name="widget_description">一目了然地显示设备的隐私评分</string>
+
+    <!-- ============================================================ -->
+    <!-- COMMON / SHARED LABELS -->
+    <!-- ============================================================ -->
+    <string name="label_common_back">返回</string>
+    <string name="label_common_cancel">取消</string>
+    <string name="label_common_open_settings">打开设置</string>
+    <string name="label_all_done">全部完成！</string>
+
+    <!-- ============================================================ -->
+    <!-- NAVIGATION TABS -->
+    <!-- ============================================================ -->
+    <string name="nav_tab_dashboard">概览</string>
+    <string name="nav_tab_actions">操作</string>
+    <string name="nav_tab_details">详情</string>
+    <string name="details_sub_tab_surveillance">监控追踪</string>
+    <string name="details_sub_tab_security">安全</string>
+    <string name="details_tab_checks">检测项</string>
+    <string name="details_tab_apps">应用</string>
+
+    <!-- ============================================================ -->
+    <!-- SCORE RATINGS -->
+    <!-- ============================================================ -->
+    <string name="score_rating_excellent_name">优秀</string>
+    <string name="score_rating_excellent_subtitle">防护强大</string>
+    <string name="score_rating_excellent_range">85-100</string>
+    <string name="score_rating_good_name">良好</string>
+    <string name="score_rating_good_subtitle">良好，存在轻微问题</string>
+    <string name="score_rating_good_range">70-84</string>
+    <string name="score_rating_fair_name">一般</string>
+    <string name="score_rating_fair_subtitle">仍有改进空间</string>
+    <string name="score_rating_fair_range">50-69</string>
+    <string name="score_rating_poor_name">需要注意</string>
+    <string name="score_rating_poor_subtitle">检测到多项问题</string>
+    <string name="score_rating_poor_range">30-49</string>
+    <string name="score_rating_critical_name">严重</string>
+    <string name="score_rating_critical_subtitle">需要立即处理</string>
+    <string name="score_rating_critical_range">0-29</string>
+
+    <!-- ============================================================ -->
+    <!-- PRIVACY CATEGORIES -->
+    <!-- ============================================================ -->
+    <string name="privacy_category_system_security_name">系统安全</string>
+    <string name="privacy_category_network_privacy_name">网络与追踪隐私</string>
+    <string name="privacy_category_google_services_name">谷歌服务</string>
+    <string name="privacy_category_default_apps_name">默认应用</string>
+    <string name="privacy_category_google_apps_name">谷歌应用</string>
+    <string name="privacy_category_meta_facebook_name">Meta/Facebook</string>
+    <string name="privacy_category_microsoft_name">微软</string>
+    <string name="privacy_category_ai_other_name">AI 与其他应用</string>
+
+    <!-- ============================================================ -->
+    <!-- PRIVACY CHECKS — SYSTEM SECURITY -->
+    <!-- ============================================================ -->
+    <string name="privacy_check_screen_lock_name">屏幕锁</string>
+    <string name="privacy_check_screen_lock_description">设备应启用屏幕锁（PIN、图案、密码或生物识别）</string>
+    <string name="privacy_check_screen_lock_recommendation">在“设置 &gt; 安全 &gt; 屏幕锁”中启用屏幕锁，防止设备被未经授权访问。</string>
+
+    <string name="privacy_check_device_encryption_name">设备加密</string>
+    <string name="privacy_check_device_encryption_description">设备存储应进行加密，以便在设备丢失或被盗时保护你的数据</string>
+    <string name="privacy_check_device_encryption_recommendation">在“设置 &gt; 安全 &gt; 加密”中启用设备加密（现代设备通常默认已启用）。</string>
+
+    <string name="privacy_check_biometric_auth_name">生物识别认证</string>
+    <string name="privacy_check_biometric_auth_description">应启用生物识别认证以增强安全性</string>
+    <string name="privacy_check_biometric_auth_recommendation">在“设置 &gt; 安全 &gt; 生物识别”中设置指纹或人脸解锁，兼顾便利与安全。注意：如果你经常出入境或可能面临法律程序，仅使用 PIN 码能提供更强的保护，因为它无法被强制要求生理解锁。</string>
+    <string name="privacy_check_biometric_auth_passing_note">你已设置生物识别解锁。注意：如果你经常出入境或可能面临法律程序，仅使用 PIN 码能提供更强的保护，因为它无法被强制要求生理解锁。</string>
+
+    <string name="privacy_check_usb_debugging_name">USB 调试</string>
+    <string name="privacy_check_usb_debugging_description">出于安全考虑，应关闭 USB 调试</string>
+    <string name="privacy_check_usb_debugging_recommendation">在“设置 &gt; 开发者选项”中关闭 USB 调试，防止他人通过 USB 连接未经授权访问设备。</string>
+
+    <string name="privacy_check_developer_options_name">开发者选项</string>
+    <string name="privacy_check_developer_options_description">个人设备上应关闭开发者选项</string>
+    <string name="privacy_check_developer_options_recommendation">在“设置 &gt; 系统 &gt; 开发者选项”中关闭开发者选项，以降低安全风险。</string>
+
+    <string name="privacy_check_notification_listener_name">通知使用权</string>
+    <string name="privacy_check_notification_listener_description">拥有通知使用权的应用可以读取所有通知，包括两步验证码和消息内容</string>
+    <string name="privacy_check_notification_listener_recommendation">在“设置 &gt; 应用 &gt; 特殊应用访问权限 &gt; 通知使用权”中检查并撤销非必要应用的通知访问权限。</string>
+    <string name="privacy_check_notification_listener_action">管理权限</string>
+
+    <string name="privacy_check_accessibility_service_name">无障碍服务访问权限</string>
+    <string name="privacy_check_accessibility_service_description">拥有无障碍服务权限的应用可以控制你的整台设备，甚至可能记录你的按键输入</string>
+    <string name="privacy_check_accessibility_service_recommendation">在“设置 &gt; 无障碍”中关闭那些并不真正需要该权限的应用的无障碍服务。</string>
+    <string name="privacy_check_accessibility_service_action">管理服务</string>
+
+    <string name="privacy_check_device_admin_name">设备管理应用</string>
+    <string name="privacy_check_device_admin_description">拥有设备管理权限的应用对你的设备具有更高的控制权</string>
+    <string name="privacy_check_device_admin_recommendation">在“设置 &gt; 安全 &gt; 设备管理应用”中检查并移除非必要应用的设备管理权限。</string>
+    <string name="privacy_check_device_admin_action">管理管理员</string>
+
+    <string name="privacy_check_background_location_apps_name">后台位置访问权限</string>
+    <string name="privacy_check_background_location_apps_description">拥有后台位置权限的应用可以随时追踪你的精确位置，即使未在使用该应用</string>
+    <string name="privacy_check_background_location_apps_recommendation">在“设置 &gt; 位置信息 &gt; 应用权限”中检查并限制后台位置权限。只将“始终允许”授予真正需要的应用。</string>
+    <string name="privacy_check_background_location_apps_action">管理权限</string>
+
+    <string name="privacy_check_security_patch_name">安全补丁</string>
+    <string name="privacy_check_security_patch_description">设备的安全补丁日期显示了上次修复已知漏洞的时间。补丁过旧会让设备暴露在已被修复的安全风险之下</string>
+    <string name="privacy_check_security_patch_recommendation">在“设置 &gt; 系统 &gt; 系统更新”中检查更新。如果没有可用更新，你的设备可能已停止维护，厂商不再提供支持。</string>
+    <string name="privacy_check_old_target_sdk_name">过时的应用兼容性</string>
+    <string name="privacy_check_old_target_sdk_description">目标版本为 Android 5.1 或更早的应用会绕过现代权限控制机制，可在未事先询问的情况下访问敏感数据</string>
+    <string name="privacy_check_old_target_sdk_recommendation">检查并卸载目标版本过旧的应用。这些应用是在运行时权限机制出现之前开发的，可能在不知不觉中访问联系人、存储等敏感数据。请寻找更新版本或现代替代品。</string>
+
+    <string name="status_security_patch_current">已是最新</string>
+    <string name="status_security_patch_unknown">无法确定补丁日期</string>
+    <string name="fmt_security_patch_ageing">已过时 — %d 个月前</string>
+    <string name="fmt_security_patch_outdated">过旧 — %d 个月前</string>
+    <string name="fmt_security_patch_critical">严重过旧 — %d 个月前</string>
+
+    <!-- ============================================================ -->
+    <!-- PRIVACY CHECKS — NETWORK & TRACKING PRIVACY -->
+    <!-- ============================================================ -->
+    <string name="privacy_check_vpn_connection_name">VPN 保护</string>
+    <string name="privacy_check_vpn_connection_description">应启用 VPN 以保护网络流量</string>
+    <string name="privacy_check_vpn_connection_recommendation">启用 VPN 连接，加密你的网络流量，保护在线隐私。</string>
+
+    <string name="privacy_check_private_dns_name">私人 DNS</string>
+    <string name="privacy_check_private_dns_description">私人 DNS 会加密你的网址查询，使网络运营商无法看到你访问了哪些网站</string>
+    <string name="privacy_check_private_dns_recommendation">在“设置 &gt; 网络和互联网 &gt; 私人 DNS”中进行配置。推荐使用：dns.quad9.net（注重隐私，可拦截恶意软件）或 dns.adguard-dns.com（拦截广告和追踪器）。</string>
+
+    <string name="privacy_check_advertising_id_name">广告标识符</string>
+    <string name="privacy_check_advertising_id_description">广告标识符使广告商能够进行跨应用追踪</string>
+    <string name="privacy_check_advertising_id_recommendation">在“设置 &gt; 隐私 &gt; 广告”中关闭或重置你的广告标识符。</string>
+    <string name="status_ad_id_not_applicable">不适用 — 未安装 Google Play 服务</string>
+
+    <string name="privacy_check_wifi_scanning_name">后台 Wi-Fi 扫描</string>
+    <string name="privacy_check_wifi_scanning_description">即使 Wi-Fi 已关闭，你的手机仍会悄悄向附近网络广播身份信息。商场、机场等场所已用此方式追踪你的停留时长与到访频率</string>
+    <string name="privacy_check_wifi_scanning_recommendation">在“设置 &gt; 位置信息 &gt; Wi-Fi 和蓝牙扫描”中关闭该功能，防止被用于位置追踪。</string>
+
+    <!-- ============================================================ -->
+    <!-- PRIVACY CHECKS — GOOGLE SERVICES -->
+    <!-- ============================================================ -->
+    <string name="privacy_check_find_my_device_name">查找我的设备</string>
+    <string name="privacy_check_find_my_device_description">谷歌的“查找我的设备/Find Hub”会追踪设备位置——这是一项有隐私代价的安全功能。在 Android 14+ 上，无法通过程序检测其启用状态</string>
+    <string name="privacy_check_find_my_device_recommendation">如果隐私优先于防盗保护，可在“设置 &gt; 安全 &gt; 查找我的设备”（Android 14+ 为 Find Hub）中关闭该功能。</string>
+
+    <string name="privacy_check_google_play_services_name">Google Play 服务</string>
+    <string name="privacy_check_google_play_services_description">Google Play 服务对你的设备拥有深度访问权限，可在所有应用范围内进行广泛的追踪与数据收集</string>
+    <string name="privacy_check_google_play_services_recommendation">可以考虑使用 GrapheneOS，以受限权限运行 Google Play 服务，大幅缩小其在设备上的影响范围。</string>
+    <string name="privacy_check_google_play_services_action">打开应用设置</string>
+    <string name="status_google_play_services_microg">已安装 MicroG（注重隐私的替代方案）</string>
+    <string name="status_google_play_services_sandboxed">已安装（沙盒运行）</string>
+
+    <!-- ============================================================ -->
+    <!-- PRIVACY CHECKS — DEFAULT APPS -->
+    <!-- ============================================================ -->
+    <string name="privacy_check_default_browser_name">默认浏览器</string>
+    <string name="privacy_check_default_browser_description">检测到默认浏览器存在隐私侵犯问题</string>
+    <string name="privacy_check_default_browser_recommendation">切换为注重隐私的浏览器，如 Brave、Firefox 或 DuckDuckGo Browser。可在 Google Play 商店获取。</string>
+    <string name="privacy_check_default_browser_action">更改默认应用</string>
+
+    <string name="privacy_check_default_keyboard_name">默认键盘</string>
+    <string name="privacy_check_default_keyboard_description">检测到默认键盘存在隐私侵犯问题</string>
+    <string name="privacy_check_default_keyboard_recommendation">切换为 FUTO Keyboard（Play 商店）以获得最佳隐私与功能，支持离线语音输入；或选用 AnySoftKeyboard（F-Droid 与 Play 商店），一款成熟且高度可定制的方案。</string>
+    <string name="privacy_check_default_keyboard_action">更改默认应用</string>
+
+    <string name="privacy_check_default_sms_name">默认短信/通讯应用</string>
+    <string name="privacy_check_default_sms_description">检测到默认通讯应用存在隐私侵犯问题</string>
+    <string name="privacy_check_default_sms_recommendation">切换为 Fossify Messages——可在 F-Droid 和 Play 商店获取。开源、注重隐私、无广告。</string>
+    <string name="privacy_check_default_sms_action">更改默认应用</string>
+
+    <string name="privacy_check_default_email_name">默认邮箱</string>
+    <string name="privacy_check_default_email_description">检测到默认邮箱应用存在隐私侵犯问题</string>
+    <string name="privacy_check_default_email_recommendation">切换为注重隐私的邮箱客户端，如 K-9 Mail、FairEmail 或 ProtonMail。可在 Google Play 商店获取。</string>
+    <string name="privacy_check_default_email_action">更改默认应用</string>
+
+    <string name="privacy_check_default_launcher_name">默认启动器</string>
+    <string name="privacy_check_default_launcher_description">检测到默认启动器存在隐私侵犯问题</string>
+    <string name="privacy_check_default_launcher_recommendation">切换为注重隐私的启动器，如 Lawnchair、KISS Launcher 或 Neo Launcher。可在 Google Play 商店获取。</string>
+    <string name="privacy_check_default_launcher_action">更改默认应用</string>
+
+    <!-- ============================================================ -->
+    <!-- PRIVACY CHECKS — GOOGLE APPS -->
+    <!-- ============================================================ -->
+    <string name="privacy_check_google_chrome_name">Chrome</string>
+    <string name="privacy_check_google_chrome_description">设备上安装了 Google Chrome 应用</string>
+    <string name="privacy_check_google_chrome_recommendation">可以考虑卸载 Chrome，改用 Brave、Firefox 或 DuckDuckGo Browser。</string>
+    <string name="privacy_check_google_chrome_action">打开应用设置</string>
+
+    <string name="privacy_check_gmail_app_name">Gmail</string>
+    <string name="privacy_check_gmail_app_description">设备上安装了 Gmail 应用</string>
+    <string name="privacy_check_gmail_app_recommendation">可以考虑卸载 Gmail，改用 K-9 Mail、FairEmail 或 ProtonMail。</string>
+    <string name="privacy_check_gmail_app_action">打开应用设置</string>
+
+    <string name="privacy_check_google_maps_name">Google 地图</string>
+    <string name="privacy_check_google_maps_description">设备上安装了 Google 地图应用</string>
+    <string name="privacy_check_google_maps_recommendation">可以考虑卸载 Google 地图，改用 OsmAnd 或 Organic Maps。</string>
+    <string name="privacy_check_google_maps_action">打开应用设置</string>
+
+    <string name="privacy_check_google_photos_name">Google 相册</string>
+    <string name="privacy_check_google_photos_description">设备上安装了 Google 相册应用</string>
+    <string name="privacy_check_google_photos_recommendation">可以考虑卸载 Google 相册，改用 Simple Gallery 或 Aves Libre。</string>
+    <string name="privacy_check_google_photos_action">打开应用设置</string>
+
+    <string name="privacy_check_google_drive_name">Google 云端硬盘</string>
+    <string name="privacy_check_google_drive_description">设备上安装了 Google 云端硬盘应用</string>
+    <string name="privacy_check_google_drive_recommendation">可以考虑卸载 Google 云端硬盘，改用 Nextcloud 或 Cryptomator。</string>
+    <string name="privacy_check_google_drive_action">打开应用设置</string>
+
+    <string name="privacy_check_youtube_name">YouTube</string>
+    <string name="privacy_check_youtube_description">设备上安装了 YouTube 应用</string>
+    <string name="privacy_check_youtube_recommendation">可以考虑使用 NewPipe 或 LibreTube 作为注重隐私的 YouTube 替代品。</string>
+    <string name="privacy_check_youtube_action">打开应用设置</string>
+
+    <string name="privacy_check_google_calendar_name">Google 日历</string>
+    <string name="privacy_check_google_calendar_description">设备上安装了 Google 日历应用</string>
+    <string name="privacy_check_google_calendar_recommendation">可以考虑卸载 Google 日历，改用 Simple Calendar 或离线日历应用。</string>
+    <string name="privacy_check_google_calendar_action">打开应用设置</string>
+
+    <string name="privacy_check_google_keep_name">Google Keep</string>
+    <string name="privacy_check_google_keep_description">设备上安装了 Google Keep 应用</string>
+    <string name="privacy_check_google_keep_recommendation">可以考虑卸载 Google Keep，改用 Simple Notes 或 Standard Notes。</string>
+    <string name="privacy_check_google_keep_action">打开应用设置</string>
+
+    <string name="privacy_check_google_camera_name">Google 相机</string>
+    <string name="privacy_check_google_camera_description">设备上安装了 Google 相机应用</string>
+    <string name="privacy_check_google_camera_recommendation">可以考虑卸载 Google 相机，改用 Open Camera 或 Simple Camera。</string>
+    <string name="privacy_check_google_camera_action">打开应用设置</string>
+
+    <string name="privacy_check_google_docs_name">Google 文档</string>
+    <string name="privacy_check_google_docs_description">设备上安装了 Google 文档应用</string>
+    <string name="privacy_check_google_docs_recommendation">可以考虑卸载 Google 文档，改用 Collabora Office 或离线编辑器。</string>
+    <string name="privacy_check_google_docs_action">打开应用设置</string>
+
+    <!-- ============================================================ -->
+    <!-- PRIVACY CHECKS — META/FACEBOOK APPS -->
+    <!-- ============================================================ -->
+    <string name="privacy_check_facebook_app_name">Facebook</string>
+    <string name="privacy_check_facebook_app_description">设备上安装了 Facebook 应用</string>
+    <string name="privacy_check_facebook_app_recommendation">可以考虑卸载 Facebook 应用，如有需要可使用移动网页版。</string>
+    <string name="privacy_check_facebook_app_action">打开应用设置</string>
+
+    <string name="privacy_check_instagram_app_name">Instagram</string>
+    <string name="privacy_check_instagram_app_description">设备上安装了 Instagram 应用</string>
+    <string name="privacy_check_instagram_app_recommendation">可以考虑卸载 Instagram 应用，如有需要可使用移动网页版，或改用 Pixelfed。</string>
+    <string name="privacy_check_instagram_app_action">打开应用设置</string>
+
+    <string name="privacy_check_whatsapp_app_name">WhatsApp</string>
+    <string name="privacy_check_whatsapp_app_description">设备上安装了 WhatsApp</string>
+    <string name="privacy_check_whatsapp_app_recommendation">可以考虑卸载 WhatsApp，改用 Signal、Session 或 SimpleX Chat。</string>
+    <string name="privacy_check_whatsapp_app_action">打开应用设置</string>
+
+    <string name="privacy_check_messenger_app_name">Messenger</string>
+    <string name="privacy_check_messenger_app_description">设备上安装了 Facebook Messenger 应用</string>
+    <string name="privacy_check_messenger_app_recommendation">可以考虑卸载 Messenger，改用 Signal 或其他注重隐私的通讯应用。</string>
+    <string name="privacy_check_messenger_app_action">打开应用设置</string>
+
+    <!-- ============================================================ -->
+    <!-- PRIVACY CHECKS — MICROSOFT APPS -->
+    <!-- ============================================================ -->
+    <string name="privacy_check_edge_app_name">Microsoft Edge</string>
+    <string name="privacy_check_edge_app_description">设备上安装了 Microsoft Edge 应用</string>
+    <string name="privacy_check_edge_app_recommendation">可以考虑卸载 Edge，改用 Brave、Firefox 或 DuckDuckGo Browser。</string>
+    <string name="privacy_check_edge_app_action">打开应用设置</string>
+
+    <string name="privacy_check_outlook_app_name">Outlook</string>
+    <string name="privacy_check_outlook_app_description">设备上安装了 Microsoft Outlook 应用</string>
+    <string name="privacy_check_outlook_app_recommendation">可以考虑卸载 Outlook，改用 K-9 Mail、FairEmail 或 ProtonMail。</string>
+    <string name="privacy_check_outlook_app_action">打开应用设置</string>
+
+    <string name="privacy_check_onedrive_app_name">OneDrive</string>
+    <string name="privacy_check_onedrive_app_description">设备上安装了 Microsoft OneDrive 应用</string>
+    <string name="privacy_check_onedrive_app_recommendation">可以考虑卸载 OneDrive，改用 Nextcloud 或 Cryptomator。</string>
+    <string name="privacy_check_onedrive_app_action">打开应用设置</string>
+
+    <!-- ============================================================ -->
+    <!-- PRIVACY CHECKS — AMAZON APPS -->
+    <!-- ============================================================ -->
+    <string name="privacy_check_amazon_shopping_name">Amazon 购物</string>
+    <string name="privacy_check_amazon_shopping_description">设备上安装了 Amazon 购物应用</string>
+    <string name="privacy_check_amazon_shopping_recommendation">可以考虑卸载该应用，使用移动网页版以获得更好的隐私保护。</string>
+    <string name="privacy_check_amazon_shopping_action">打开应用设置</string>
+
+    <string name="privacy_check_prime_video_name">Prime Video</string>
+    <string name="privacy_check_prime_video_description">设备上安装了 Amazon Prime Video 应用</string>
+    <string name="privacy_check_prime_video_recommendation">可以考虑卸载 Prime Video，改用移动网页版。流媒体应用会收集观看习惯与设备数据。</string>
+    <string name="privacy_check_prime_video_action">打开应用设置</string>
+
+    <!-- ============================================================ -->
+    <!-- PRIVACY CHECKS — AI/LLM APPS (shared description and recommendation) -->
+    <!-- ============================================================ -->
+    <string name="privacy_check_ai_app_description">AI 应用在云端服务器上处理对话内容——请注意你分享的信息</string>
+    <string name="privacy_check_ai_app_recommendation">避免在 AI 对话中分享密码、财务信息或个人隐私信息。请在应用中检查你的聊天记录和数据设置。</string>
+
+    <string name="privacy_check_chatgpt_app_name">ChatGPT</string>
+    <string name="privacy_check_chatgpt_app_action">打开应用设置</string>
+
+    <string name="privacy_check_google_gemini_name">Google Gemini</string>
+    <string name="privacy_chec
