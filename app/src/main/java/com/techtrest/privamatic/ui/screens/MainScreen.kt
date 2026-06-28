@@ -397,7 +397,8 @@ fun MainScreen(viewModel: PrivacyViewModel = viewModel()) {
             selectedFilter = selectedHistoryFilter,
             onFilterChanged = { viewModel.setHistoryFilter(it) },
             onClearHistory = { viewModel.clearHistory() },
-            onBackClick = { navigationState.closeHistory() }
+            onBackClick = { navigationState.closeHistory() },
+            onLoadHistory = { viewModel.loadHistory() }
         )
     }
 

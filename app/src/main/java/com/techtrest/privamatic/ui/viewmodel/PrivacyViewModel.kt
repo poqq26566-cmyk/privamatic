@@ -147,6 +147,12 @@ class PrivacyViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+    fun loadHistory() {
+        viewModelScope.launch {
+            _historySnapshots.value = snapshotRepository.getSnapshots(_selectedFilter.value)
+        }
+    }
+
     fun clearHistory() {
         viewModelScope.launch {
             snapshotRepository.clearAll()

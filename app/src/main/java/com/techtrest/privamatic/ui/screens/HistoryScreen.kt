@@ -37,6 +37,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -71,10 +72,15 @@ fun HistoryScreen(
     selectedFilter: HistoryFilter,
     onFilterChanged: (HistoryFilter) -> Unit,
     onClearHistory: () -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onLoadHistory: () -> Unit
 ) {
     var selectedSnapshot by remember(snapshots) { mutableStateOf<PrivacySnapshot?>(null) }
     var showClearConfirm by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        onLoadHistory()
+    }
 
     BackHandler { onBackClick() }
 
@@ -154,7 +160,7 @@ fun HistoryScreen(
 
             // Chart
             item {
-                if (snapshots.size < 3) {
+                if (snapshots.isEmpty()) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -178,7 +184,7 @@ fun HistoryScreen(
             }
 
             // X-axis date labels (only when chart is visible)
-            if (snapshots.size >= 3) {
+            if (snapshots.size >= 1) {
                 item {
                     Row(
                         modifier = Modifier

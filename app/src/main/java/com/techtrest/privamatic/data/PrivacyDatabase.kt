@@ -19,7 +19,9 @@ abstract class PrivacyDatabase : RoomDatabase() {
                     context.applicationContext,
                     PrivacyDatabase::class.java,
                     "privacy_history.db"
-                ).build().also { INSTANCE = it }
+                )
+                .setJournalMode(RoomDatabase.JournalMode.TRUNCATE)
+                .build().also { INSTANCE = it }
             }
     }
 }
